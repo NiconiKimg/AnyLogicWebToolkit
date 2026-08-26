@@ -27,6 +27,13 @@ test {
     useJUnitPlatform()
 }
 
+javadoc {
+    options.encoding = 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.windowTitle = "AnyLogic Web Toolkit ${version} API"
+    options.header = "AnyLogic Web Toolkit ${version}"
+}
+
 shadowJar {
     archiveBaseName.set('AnyLogicWebToolkit')
     archiveClassifier.set('')
@@ -43,13 +50,13 @@ tasks.register('copyExamples', Copy) {
 
 tasks.register('buildDist') {
     group = 'build'
-    description = 'Construye el JAR de distribucion en dist/'
+    description = 'Builds the distribution JAR in dist/'
     dependsOn shadowJar
     doLast {
         copy {
             from "${projectDir}/dist/AnyLogicWebToolkit-0.1.0.jar"
             into "${projectDir}/AnyLogicLibrary"
         }
-        println 'AnyLogicWebToolkit-0.1.0.jar copiado a AnyLogicLibrary/'
+        println 'AnyLogicWebToolkit-0.1.0.jar copied to AnyLogicLibrary/'
     }
 }

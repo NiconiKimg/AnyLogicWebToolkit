@@ -12,6 +12,17 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * CEF resource handler for the virtual {@code http://webtoolkit/} scheme.
+ *
+ * <p>Intercepts all requests whose URL begins with {@code http://webtoolkit/} and
+ * serves them from the local file system, rooted at the AnyLogic project directory.
+ * The special path {@code __webtk_api.js} is served from memory (the JS API
+ * injected by {@link com.anylogic.webtoolkit.bridge.WebBridge#getApiScript()})
+ * rather than from disk.
+ *
+ * <p>A new instance is created per request by {@link com.anylogic.webtoolkit.ui.WebDialog}.
+ */
 public class WebSchemeHandler extends CefResourceHandlerAdapter {
 
     private static final WebToolkitLogger LOG = WebToolkitLogger.get("BROWSER");
@@ -21,16 +32,26 @@ public class WebSchemeHandler extends CefResourceHandlerAdapter {
     private String mimeType;
     private int offset;
 
+    /**
+     * @param projectRoot the root directory from which relative file paths are resolved;
+     *                    typically {@code Paths.get(System.getProperty("user.dir"))}
+     */
     public WebSchemeHandler(Path projectRoot) { this.projectRoot = projectRoot; }
 
+    /**
+     * Resolves the requested URL to a file on disk (or the in-memory API script),
+     * reads the content, and signals CEF to proceed.
+     *
+     * @return {@code true} in all cases, as required by the CEF resource handler contract
+     */
     @Override
     public boolean processRequest(CefRequest request, CefCallback callback) {
         try {
             String path = extractPath(request.getURL());
-            
-            // Provide the magic API script
+
             if (path.endsWith("__webtk_api.js")) {
-                data = com.anylogic.webtoolkit.bridge.WebBridge.getApiScript().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                data = com.anylogic.webtoolkit.bridge.WebBridge.getApiScript()
+                           .getBytes(java.nio.charset.StandardCharsets.UTF_8);
                 mimeType = "application/javascript";
                 offset = 0;
                 callback.Continue();
@@ -38,7 +59,7 @@ public class WebSchemeHandler extends CefResourceHandlerAdapter {
             }
 
             Path file = projectRoot.resolve(path).normalize();
-            if (!Files.exists(file))            { callback.cancel(); return true; }
+            if (!Files.exists(file)) { callback.cancel(); return true; }
             data     = Files.readAllBytes(file);
             mimeType = guessMime(file.getFileName().toString());
             offset   = 0;
@@ -68,9 +89,9 @@ public class WebSchemeHandler extends CefResourceHandlerAdapter {
         return true;
     }
 
+    /** Strips the {@code http://webtoolkit/} prefix, returning the bare relative path. */
     private String extractPath(String url) {
         try {
-            // intercept http://webtoolkit/{rest}
             String path = new URI(url).getPath();
             if (path != null && path.startsWith("/")) {
                 return path.substring(1);

@@ -15,12 +15,39 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Bidirectional communication bridge between Java and the embedded browser.
+ *
+ * <p>On the Java side, commands arriving from JavaScript are dispatched to
+ * registered {@link BridgeCommandHandler} instances. Events can be pushed to
+ * JavaScript at any time via {@link #emit}.
+ *
+ * <p>On the JavaScript side, the global {@code AnyLogic} object injected by
+ * {@link #getApiScript()} exposes {@code AnyLogic.call()}, {@code AnyLogic.events},
+ * {@code AnyLogic.state}, {@code AnyLogic.files}, and {@code AnyLogic.dialog}.
+ *
+ * <p>All methods that interact with the browser dispatch to the Swing EDT internally;
+ * callers do not need to be on the EDT.
+ */
 public class WebBridge {
 
     private static final WebToolkitLogger LOG = WebToolkitLogger.get("BRIDGE");
     private final Gson gson = new Gson();
     private final Map<String, BridgeCommandHandler> commands = new ConcurrentHashMap<>();
     private final Map<String, CopyOnWriteArrayList<BridgeEventListener>> listeners = new ConcurrentHashMap<>();
+    private final CopyOnWriteArrayList<BridgeEventListener> anyEventListeners = new CopyOnWriteArrayList<>();
+
+    private DefaultBridgeCommandHandler defaultCommandHandler;
+    private CefBrowser browser;
+
+    /**
+     * Returns the JavaScript source that bootstraps the {@code AnyLogic} API object.
+     *
+     * <p>This script is served at {@code http://webtoolkit/__webtk_api.js} and must be
+     * included in every HTML page that uses the bridge.
+     *
+     * @return the complete JS source as a string
+     */
     public static String getApiScript() {
         return """
             (function() {
@@ -71,47 +98,104 @@ public class WebBridge {
                 },
                 runtime: { version:'0.2.0', platform:'windows' }
               };
-              console.log('[WEBTK] API AnyLogic importada v0.2.0');
+              console.log('[WEBTK] API v0.2.0 loaded');
             })();
             """;
     }
 
-    private CefBrowser browser;
+    /**
+     * Sets the browser instance that receives emitted events.
+     * Must be called before any {@link #emit} or {@link #execute} calls.
+     *
+     * @param browser the active CEF browser
+     */
     public void setBrowser(CefBrowser browser) { this.browser = browser; }
 
+    /**
+     * Pushes an event to JavaScript, invoking all {@code AnyLogic.events.on(event, ...)}
+     * handlers registered in the page.
+     *
+     * <p>Safe to call from any thread. If no browser has been set, the call is a no-op.
+     *
+     * @param event the event name
+     * @param data  the payload; serialized to JSON via Gson
+     */
     public void emit(String event, Object data) {
         if (browser == null) { LOG.warn("emit() without browser"); return; }
         String json = gson.toJson(data);
-        String js = String.format("window.__WEBTK__ && window.__WEBTK__.dispatch('%s',%s);", event.replace("'","\\'"), json);
+        String js = String.format("window.__WEBTK__ && window.__WEBTK__.dispatch('%s',%s);", event.replace("'", "\\'"), json);
         SwingUtilities.invokeLater(() -> browser.executeJavaScript(js, "webtoolkit://bridge", 0));
     }
 
+    /**
+     * Executes arbitrary JavaScript in the browser.
+     *
+     * <p>Safe to call from any thread. If no browser has been set, the call is a no-op.
+     *
+     * @param jsCode the JavaScript source to execute
+     */
     public void execute(String jsCode) {
         if (browser == null) return;
         SwingUtilities.invokeLater(() -> browser.executeJavaScript(jsCode, "webtoolkit://bridge", 0));
     }
 
+    /**
+     * Registers a handler for the given command name.
+     * Replaces any previously registered handler for the same name.
+     *
+     * @param name    the command name as used in {@code AnyLogic.call(name, ...)}
+     * @param handler the handler to invoke when the command is received
+     */
     public void registerCommand(String name, BridgeCommandHandler handler) {
         commands.put(name, handler);
-        LOG.debug("Comando registrado: " + name);
+        LOG.debug("Command registered: " + name);
     }
 
+    /**
+     * Removes the handler registered for the given command name.
+     *
+     * @param name the command name to deregister
+     */
     public void removeCommand(String name) { commands.remove(name); }
 
+    /**
+     * Subscribes a listener to a specific command. The listener is called after
+     * the command's handler has been invoked, and cannot affect the response.
+     *
+     * @param event    the command name to observe
+     * @param listener the listener to add
+     */
     public void on(String event, BridgeEventListener listener) {
         listeners.computeIfAbsent(event, k -> new CopyOnWriteArrayList<>()).add(listener);
     }
 
+    /**
+     * Removes a previously added listener for the given command.
+     *
+     * @param event    the command name
+     * @param listener the listener to remove
+     */
     public void off(String event, BridgeEventListener listener) {
         var list = listeners.get(event);
         if (list != null) list.remove(listener);
     }
 
-    private final CopyOnWriteArrayList<BridgeEventListener> anyEventListeners = new CopyOnWriteArrayList<>();
+    /**
+     * Subscribes a listener that is called for every command received from JavaScript,
+     * regardless of name.
+     *
+     * @param listener the listener to add
+     */
     public void onAnyEvent(BridgeEventListener listener) {
         anyEventListeners.add(listener);
     }
 
+    /**
+     * Creates the CEF message router handler that routes incoming {@code cefQuery}
+     * requests to {@link #handleIncoming}.
+     *
+     * @return a {@link CefMessageRouterHandlerAdapter} ready to be added to a {@link org.cef.browser.CefMessageRouter}
+     */
     public CefMessageRouterHandlerAdapter createRouterHandler() {
         return new CefMessageRouterHandlerAdapter() {
             @Override
@@ -123,7 +207,12 @@ public class WebBridge {
         };
     }
 
-    private DefaultBridgeCommandHandler defaultCommandHandler;
+    /**
+     * Sets the handler invoked when a command has no specific registration.
+     * If {@code null}, unregistered commands are rejected with {@code UNKNOWN_COMMAND}.
+     *
+     * @param handler the fallback handler, or {@code null} to clear it
+     */
     public void setDefaultCommandHandler(DefaultBridgeCommandHandler handler) {
         this.defaultCommandHandler = handler;
     }
@@ -146,7 +235,7 @@ public class WebBridge {
                         }
                     };
                 } else {
-                    callback.failure(400, errorJson(id, "UNKNOWN_COMMAND", "Comando no registrado: " + command));
+                    callback.failure(400, errorJson(id, "UNKNOWN_COMMAND", "Command not registered: " + command));
                     return;
                 }
             }

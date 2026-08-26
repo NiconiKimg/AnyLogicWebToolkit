@@ -1,0 +1,40 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Compile and Test
+        run: ./gradlew compileJava test
+
+      - name: Markdown Lint
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: |
+            docs/**/*.md
+            README.md
+            INSTALL.md
+
+      - name: Check for committed AnyLogicLibrary JARs
+        run: |
+          if ls AnyLogicLibrary/*.jar 1> /dev/null 2>&1; then
+            echo "Error: Found .jar files in AnyLogicLibrary/. These should not be committed."
+            exit 1
+          fi
+          echo "No committed JARs found in AnyLogicLibrary/."
