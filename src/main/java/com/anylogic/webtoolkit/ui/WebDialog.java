@@ -35,6 +35,23 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.UUID;
 
+/**
+ * A native window hosting an embedded Chromium browser and the toolkit's
+ * {@link WebBridge} for bidirectional Java ↔ JavaScript communication.
+ *
+ * <p>{@link WebRuntime} must be initialized before calling {@link #open}.
+ * All UI operations are dispatched to the Swing EDT internally.
+ *
+ * <p>Built-in keyboard shortcuts:
+ * <ul>
+ *   <li><b>F5</b> — reload the page (cache bypass)</li>
+ *   <li><b>F12</b> — open Chrome DevTools</li>
+ * </ul>
+ *
+ * <p>Built-in bridge commands registered automatically on open:
+ * {@code __dialog_close__}, {@code __get__}, {@code __set__},
+ * {@code __fs_open__}, {@code __fs_save__}, {@code __fs_read__}, {@code __fs_write__}.
+ */
 public class WebDialog {
 
     private static final WebToolkitLogger LOG = WebToolkitLogger.get("UI");
@@ -56,19 +73,76 @@ public class WebDialog {
     private CefBrowser browser;
     private WebAppState state = WebAppState.CREATED;
 
+    /**
+     * @param resourcePath path to the HTML entry point, relative to the AnyLogic project
+     *                     directory (i.e. {@code System.getProperty("user.dir")})
+     */
     public WebDialog(String resourcePath) { this.resourcePath = resourcePath; }
 
+    // --- Builder-style configuration (must be called before open()) ---
+
+    /**
+     * Sets the window title.
+     *
+     * @param t the title string
+     * @return {@code this} for chaining
+     */
     public WebDialog setTitle(String t)      { this.title = t;        return this; }
+
+    /**
+     * Sets the initial window size. Defaults to 1200×800.
+     *
+     * @param w width in pixels
+     * @param h height in pixels
+     * @return {@code this} for chaining
+     */
     public WebDialog setSize(int w, int h)   { width = w; height = h; return this; }
+
+    /**
+     * Sets whether the window is modal. Currently informational; not enforced by the JFrame.
+     *
+     * @param v {@code true} for modal
+     * @return {@code this} for chaining
+     */
     public WebDialog setModal(boolean v)     { this.modal = v;        return this; }
+
+    /**
+     * Sets whether the user can resize the window. Defaults to {@code true}.
+     *
+     * @param v {@code true} to allow resizing
+     * @return {@code this} for chaining
+     */
     public WebDialog setResizable(boolean v) { this.resizable = v;    return this; }
 
+    // --- Accessors ---
+
+    /** @return the {@link WebBridge} for emitting events and registering commands */
     public WebBridge      getBridge()      { return bridge; }
+
+    /** @return the permission set for this dialog */
     public WebPermissions getPermissions() { return permissions; }
+
+    /** @return the shared state store for Java ↔ JS key-value synchronization */
     public StateSync      getStateSync()   { return stateSync; }
+
+    /** @return the current lifecycle state */
     public WebAppState    getState()       { return state; }
+
+    /** @return {@code true} if the window exists and is currently visible */
     public boolean        isOpen()         { return dialog != null && dialog.isVisible(); }
 
+    // --- Lifecycle ---
+
+    /**
+     * Creates and displays the browser window.
+     *
+     * <p>The call returns immediately; actual construction happens on the Swing EDT.
+     * The state transitions: {@code CREATED → INITIALIZING → LOADING → READY}.
+     *
+     * @throws WebToolkitException with code {@code NOT_INITIALIZED} if {@link WebRuntime}
+     *                             has not been initialized
+     * @throws WebToolkitException with code {@code DIALOG_OPEN_FAILED} if construction fails
+     */
     public void open() {
         WebRuntime.getInstance().checkInitialized();
         SwingUtilities.invokeLater(() -> {
@@ -82,6 +156,12 @@ public class WebDialog {
         });
     }
 
+    /**
+     * Closes the browser window and disposes all CEF resources.
+     *
+     * <p>Safe to call if the window is not open. The call is asynchronous;
+     * state transitions to {@code CLOSING} then {@code CLOSED} on the EDT.
+     */
     public void close() {
         if (dialog == null) return;
         SwingUtilities.invokeLater(() -> {
@@ -94,21 +174,36 @@ public class WebDialog {
         });
     }
 
+    /**
+     * Reloads the current page, bypassing the browser cache.
+     * No-op if the browser is not yet open.
+     */
     public void reload() {
         if (browser != null) SwingUtilities.invokeLater(browser::reload);
     }
 
+    /**
+     * Makes the window visible. No-op if the window does not exist.
+     */
     public void show() {
         if (dialog != null) SwingUtilities.invokeLater(() -> dialog.setVisible(true));
     }
 
+    /**
+     * Hides the window without closing it. No-op if the window does not exist.
+     */
     public void hide() {
         if (dialog != null) SwingUtilities.invokeLater(() -> dialog.setVisible(false));
     }
 
+    /**
+     * Toggles the window's visibility. No-op if the window does not exist.
+     */
     public void toggle() {
         if (dialog != null) SwingUtilities.invokeLater(() -> dialog.setVisible(!dialog.isVisible()));
     }
+
+    // --- Internal ---
 
     private void buildAndShow() {
         final Path projectRoot = Paths.get(System.getProperty("user.dir"));
@@ -134,6 +229,7 @@ public class WebDialog {
             }
         });
 
+        // Propagate document.title changes to the JFrame title bar
         cefClient.addDisplayHandler(new CefDisplayHandlerAdapter() {
             @Override
             public void onTitleChange(CefBrowser b, String newTitle) {
@@ -189,7 +285,7 @@ public class WebDialog {
         } catch (Exception e) {
             LOG.warn("Could not resolve canonical path: " + e.getMessage());
         }
-        
+
         String url = "http://webtoolkit/" + safePath;
         browser = cefClient.createBrowser(url, false, false);
         bridge.setBrowser(browser);
@@ -207,29 +303,30 @@ public class WebDialog {
         dialog.setVisible(true);
         browser.getUIComponent().requestFocus();
         state = WebAppState.LOADING;
-        
+
         setupBridge();
     }
 
+    /** Registers all built-in bridge commands. */
     private void setupBridge() {
         bridge.registerCommand("__dialog_close__", (args, cb) -> { close(); cb.success(null); });
-        
-        // Send events to JS when state changes
+
+        // Forward StateSync changes to JS as __state_change__ events
         stateSync.onAnyChange((key, val) -> {
             bridge.emit("__state_change__", Map.of("key", key, "value", val));
         });
-        
+
         bridge.registerCommand("__get__", (args, cb) -> {
             if (args.length < 1) { cb.failure("INVALID_ARGS", "Missing key"); return; }
             cb.success(stateSync.get(String.valueOf(args[0])));
         });
-        
+
         bridge.registerCommand("__set__", (args, cb) -> {
             if (args.length < 2) { cb.failure("INVALID_ARGS", "Missing key/value"); return; }
             stateSync.set(String.valueOf(args[0]), args[1]);
             cb.success(null);
         });
-        
+
         bridge.registerCommand("__fs_open__", (args, cb) -> {
             String title = args.length > 0 && args[0] != null ? String.valueOf(args[0]) : null;
             String defaultName = args.length > 1 && args[1] != null ? String.valueOf(args[1]) : null;
@@ -240,7 +337,7 @@ public class WebDialog {
                 return null;
             });
         });
-        
+
         bridge.registerCommand("__fs_save__", (args, cb) -> {
             String title = args.length > 0 && args[0] != null ? String.valueOf(args[0]) : null;
             String defaultName = args.length > 1 && args[1] != null ? String.valueOf(args[1]) : null;
@@ -251,7 +348,7 @@ public class WebDialog {
                 return null;
             });
         });
-        
+
         bridge.registerCommand("__fs_read__", (args, cb) -> {
             if (args.length < 1) { cb.failure("INVALID_ARGS", "Missing path"); return; }
             String path = String.valueOf(args[0]);
@@ -263,7 +360,7 @@ public class WebDialog {
                 cb.failure("FS_ERROR", e.getMessage());
             }
         });
-        
+
         bridge.registerCommand("__fs_write__", (args, cb) -> {
             if (args.length < 2) { cb.failure("INVALID_ARGS", "Missing path or data"); return; }
             String path = String.valueOf(args[0]);

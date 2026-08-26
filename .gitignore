@@ -1,6 +1,7 @@
 # Java and Gradle
 *.class
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.nar
@@ -32,3 +33,5 @@ AnyLogicLibrary/*.jar
 # OS Generated
 .DS_Store
 Thumbs.db
+
+*.log

@@ -19,7 +19,7 @@ When you drag the `WebApp` agent from the WebToolkit palette onto your `Main` ca
 ## 3. width & height (int)
 **Description:** The initial dimensions (in pixels) of the browser window.
 **Usage:** 
-- The default is usually `1280`x`720`.
+- The default is `1200`×`800`.
 - The window is resizable by the user during execution.
 
 ## 4. resizable (boolean)
