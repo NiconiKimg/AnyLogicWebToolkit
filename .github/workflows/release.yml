@@ -49,18 +49,6 @@ jobs:
       - name: Build Fat JAR
         run: ./gradlew shadowJar
 
-      - name: Build Distribution ZIP
-        run: |
-          mkdir -p dist_zip
-          cp dist/AnyLogicWebToolkit-${{ env.VERSION }}.jar dist_zip/
-          cp AnyLogicLibrary/WebToolkit.alp dist_zip/
-          cp AnyLogicLibrary/logo-*.png dist_zip/
-          cp -r examples dist_zip/
-          cp -r docs dist_zip/
-          cp README.md INSTALL.md dist_zip/
-          cd dist_zip
-          zip -r ../AnyLogicWebToolkit-${{ env.VERSION }}.zip ./*
-
       - name: Extract Changelog Entry
         id: changelog
         run: |
@@ -86,5 +74,4 @@ jobs:
           body_path: release_notes.md
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
           files: |
-            AnyLogicWebToolkit-${{ env.VERSION }}.zip
             dist/AnyLogicWebToolkit-${{ env.VERSION }}.jar
