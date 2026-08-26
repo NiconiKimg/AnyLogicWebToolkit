@@ -24,7 +24,7 @@ jobs:
         run: ./gradlew compileJava test
 
       - name: Markdown Lint
-        uses: DavidAnson/markdownlint-cli2-action@v16
+        uses: DavidAnson/markdownlint-cli2-action@v2
         with:
           globs: |
             docs/**/*.md
