@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify Tag Matches gradle.properties
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          GRADLE_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
+          if [ "$TAG_VERSION" != "$GRADLE_VERSION" ]; then
+            echo "Error: Git tag version ($TAG_VERSION) does not match gradle.properties version ($GRADLE_VERSION)"
+            exit 1
+          fi
+          echo "Versions match: $TAG_VERSION"
+          echo "VERSION=$TAG_VERSION" >> $GITHUB_ENV
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Compile and Test
+        run: ./gradlew compileJava test
+
+      - name: Build Fat JAR
+        run: ./gradlew shadowJar
+
+      - name: Build Distribution ZIP
+        run: |
+          mkdir -p dist_zip
+          cp dist/AnyLogicWebToolkit-${{ env.VERSION }}.jar dist_zip/
+          cp AnyLogicLibrary/WebToolkit.alp dist_zip/
+          cp AnyLogicLibrary/logo-*.png dist_zip/
+          cp -r examples dist_zip/
+          cp -r docs dist_zip/
+          cp README.md INSTALL.md dist_zip/
+          cd dist_zip
+          zip -r ../AnyLogicWebToolkit-${{ env.VERSION }}.zip ./*
+
+      - name: Extract Changelog Entry
+        id: changelog
+        run: |
+          # Extract the section for the current version from CHANGELOG.md
+          awk -v ver="${{ env.VERSION }}" '/^## \[/ { if (p) { exit }; if ($2 == "["ver"]") { p=1; next } } p && NF' CHANGELOG.md > release_notes.md
+          if [ ! -s release_notes.md ]; then
+            echo "No changelog entry found for version ${{ env.VERSION }}" > release_notes.md
+          fi
+
+      - name: Determine Pre-release Status
+        id: prerelease
+        run: |
+          if [[ "${{ env.VERSION }}" == *-* ]]; then
+            echo "IS_PRERELEASE=true" >> $GITHUB_ENV
+          else
+            echo "IS_PRERELEASE=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: AnyLogic Web Toolkit v${{ env.VERSION }}
+          body_path: release_notes.md
+          prerelease: ${{ env.IS_PRERELEASE == 'true' }}
+          files: |
+            AnyLogicWebToolkit-${{ env.VERSION }}.zip
+            dist/AnyLogicWebToolkit-${{ env.VERSION }}.jar

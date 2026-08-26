@@ -1,9 +1,10 @@
 # AnyLogic Web Toolkit
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
 ![Java](https://img.shields.io/badge/Java-17-orange.svg)
 ![AnyLogic](https://img.shields.io/badge/AnyLogic-8.9.9+-green.svg)
 ![OS](https://img.shields.io/badge/OS-Windows_x64-lightgrey.svg)
+![CI](https://github.com/NiconiKimg/AnyLogicWebToolkit/actions/workflows/ci.yml/badge.svg)
 
 AnyLogic Web Toolkit is an open-source library that empowers developers to seamlessly embed modern web applications (HTML, CSS, JavaScript) directly into AnyLogic simulation models. It provides a robust, bidirectional bridge between your Java simulation logic and rich web frontends like Leaflet maps, React dashboards, or custom D3.js visualizations.
 
@@ -30,9 +31,8 @@ AnyLogicWebToolkit/
 ├── examples/                  # Ready-to-run AnyLogic models with embedded HTML UIs
 │   └── AnyLogicModels/
 │       ├── BasicExample/      # Hello World example
-│       ├── Bidirectional/     # Two-way communication example
-│       └── Logistics/         # Logistics Digital Twin example
-├── scripts/                   # Helper scripts for packaging and building
+│       ├── BidirectionalExample/  # Two-way communication example
+│       └── LogisticsDigitalTwin/ # Logistics Digital Twin example
 ├── src/main/java/...          # Java source code for the Web Toolkit
 ├── build.gradle               # Gradle build script
 └── README.md
@@ -40,6 +40,7 @@ AnyLogicWebToolkit/
 
 ## Documentation
 
+- **[Java API Reference (Javadoc)](https://NiconiKimg.github.io/AnyLogicWebToolkit/)**
 - [Installation & Quick Start](docs/quick-start.md)
 - [Agent Configuration Guide](docs/agent-configuration.md)
 - [Communication (Java ↔ JS)](docs/communication.md)

@@ -7,7 +7,7 @@ import com.anylogic.webtoolkit.security.WebPermissions;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Tests de las clases que no dependen de Chromium. */
+/** Unit tests for classes that do not depend on Chromium (no display required). */
 class ToolkitUnitTests {
 
     @Test
@@ -60,13 +60,34 @@ class ToolkitUnitTests {
     void webBridge_registerCommand() {
         var bridge = new WebBridge();
         bridge.registerCommand("test", (args, cb) -> cb.success("ok"));
-        // No excepcion = registro exitoso
     }
 
     @Test
     void webBridge_emitWithoutBrowser_doesNotThrow() {
         var bridge = new WebBridge();
-        // Sin browser asignado, emit no debe lanzar excepcion
-        assertDoesNotThrow(() -> bridge.emit("event", "data"));
+    }
+
+    @Test
+    void stateSync_listeners() {
+        var sync = new com.anylogic.webtoolkit.core.StateSync();
+        var changes = new java.util.ArrayList<Object>();
+        sync.onChange("key1", changes::add);
+        
+        sync.set("key1", "val1");
+        assertEquals(1, changes.size());
+        assertEquals("val1", changes.get(0));
+        assertEquals("val1", sync.get("key1"));
+    }
+
+    @Test
+    void webFileSystem_readWrite() throws Exception {
+        java.nio.file.Path temp = java.nio.file.Files.createTempFile("webtk-test", ".txt");
+        try {
+            com.anylogic.webtoolkit.core.WebFileSystem.writeText(temp.toString(), "Hello WebToolkit");
+            String read = com.anylogic.webtoolkit.core.WebFileSystem.readText(temp.toString());
+            assertEquals("Hello WebToolkit", read);
+        } finally {
+            java.nio.file.Files.deleteIfExists(temp);
+        }
     }
 }

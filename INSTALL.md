@@ -9,7 +9,7 @@
 ## Installation Steps
 
 1. **Download and Extract:**
-   Download the `AnyLogicWebToolkit-1.0.0.zip` from the Releases page and extract it to a permanent folder on your computer (e.g., `C:\AnyLogicLibs\AnyLogicWebToolkit\`).
+   Download the `AnyLogicWebToolkit-0.1.0.zip` from the Releases page and extract it to a permanent folder on your computer (e.g., `C:\AnyLogicLibs\AnyLogicWebToolkit\`).
 
 2. **Add the Toolkit to your AnyLogic Palette:**
    - Open AnyLogic.
