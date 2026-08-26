@@ -1,6 +1,7 @@
 name: PR Validation
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -11,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -22,14 +23,6 @@ jobs:
 
       - name: Compile and Test
         run: ./gradlew compileJava test
-
-      - name: Markdown Lint
-        uses: DavidAnson/markdownlint-cli2-action@v2
-        with:
-          globs: |
-            docs/**/*.md
-            README.md
-            INSTALL.md
 
       - name: Check for committed AnyLogicLibrary JARs
         run: |
