@@ -1,0 +1,31 @@
+# Java and Gradle
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+.gradle/
+build/
+bin/
+dist/
+out/
+
+# IDEs
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# AnyLogic Temporaries
+# AnyLogic creates a temporary folder when the model is running and a database file.
+*.anylogic_db
+*.anylogic_db-shm
+*.anylogic_db-wal
+.tmp/
+~*
+
+# OS Generated
+.DS_Store
+Thumbs.db

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Example</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        h1 { color: #333; margin-top: 0; }
+        p { color: #666; margin-bottom: 2rem; }
+        button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+        button:hover { background-color: #45a049; }
+        #result { margin-top: 1rem; font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Hello from AnyLogic Web Toolkit</h1>
+        <p>This is a basic example demonstrating web-to-model communication.</p>
+        <button id="helloBtn">Say Hello to AnyLogic</button>
+        <div id="result"></div>
+    </div>
+
+    <!-- Web Toolkit API -->
+    <script src="http://webtoolkit/__webtk_api.js"></script>
+    <script>
+        document.getElementById('helloBtn').addEventListener('click', async () => {
+            try {
+                // Call 'hello' command in AnyLogic and wait for response
+                const result = await AnyLogic.call("hello");
+                document.getElementById('result').innerText = "AnyLogic says: " + result;
+            } catch (error) {
+                console.error(error);
+                document.getElementById('result').innerText = "Error: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

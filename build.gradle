@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.anylogic.webtoolkit'
+version = '0.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'me.friwi:jcefmaven:146.0.10'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+shadowJar {
+    archiveBaseName.set('AnyLogicWebToolkit')
+    archiveClassifier.set('')
+    archiveVersion.set('0.1.0')
+    relocate 'com.google.gson', 'com.anylogic.webtoolkit.shaded.gson'
+    mergeServiceFiles()
+    destinationDirectory.set(file("${projectDir}/dist"))
+}
+
+tasks.register('copyExamples', Copy) {
+    from 'examples'
+    into "${projectDir}/dist/examples"
+}
+
+tasks.register('buildDist') {
+    group = 'build'
+    description = 'Construye el JAR de distribucion en dist/'
+    dependsOn shadowJar, 'copyExamples'
+    doLast {
+        println 'AnyLogicWebToolkit.jar generado en dist/'
+    }
+}

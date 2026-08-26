@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logistics Digital Twin — AnyLogic</title>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- SheetJS -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>Logistics Digital Twin</h1>
+        <span class="badge" id="statusBadge">Connected</span>
+      </div>
+
+      <!-- New Order Form -->
+      <section class="form-section">
+        <h2>New Order</h2>
+        <div class="field">
+          <label>Origin</label>
+          <input id="inputOrigin" type="text" placeholder="Origin address" readonly>
+        </div>
+        <div class="field">
+          <label>Destination</label>
+          <input id="inputDestination" type="text" placeholder="Click on the map" readonly>
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <input id="inputDesc" type="text" placeholder="e.g.: Fragile box">
+        </div>
+        <div class="field">
+          <label>Priority</label>
+          <select id="inputPriority">
+            <option value="normal">Normal</option>
+            <option value="urgent">Urgent</option>
+            <option value="scheduled">Scheduled</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="orders.createOrder()">Create Order</button>
+          <button class="btn-ghost" onclick="orders.clearForm()">Clear</button>
+        </div>
+      </section>
+
+      <!-- Excel Actions -->
+      <section class="form-section">
+        <h2>Data</h2>
+        <div class="btn-row">
+          <button class="btn-outline" onclick="excel.importFile()">📥 Import XLSX</button>
+          <button class="btn-outline" onclick="excel.exportFile()">📤 Export XLSX</button>
+        </div>
+      </section>
+
+      <!-- Orders List -->
+      <section class="orders-list">
+        <h2>Orders <span id="ordersCount">(0)</span></h2>
+        <div id="listOrders"></div>
+      </section>
+    </aside>
+
+    <!-- Map -->
+    <main class="map-container">
+      <div id="map"></div>
+      <div class="map-hint" id="mapHint">Click to set destination</div>
+    </main>
+
+  </div>
+  <!-- AnyLogic Web Toolkit API -->
+  <script src="__webtk_api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
