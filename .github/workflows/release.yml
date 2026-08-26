@@ -52,7 +52,6 @@ jobs:
       - name: Build Distribution ZIP
         run: |
           mkdir -p dist_zip
-          cp AnyLogicLibrary/WebToolkit.jar dist_zip/
           cp dist/AnyLogicWebToolkit-${{ env.VERSION }}.jar dist_zip/
           cp AnyLogicLibrary/WebToolkit.alp dist_zip/
           cp AnyLogicLibrary/logo-*.png dist_zip/

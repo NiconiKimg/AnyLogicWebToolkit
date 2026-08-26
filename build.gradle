@@ -38,6 +38,12 @@ shadowJar {
     archiveBaseName.set('AnyLogicWebToolkit')
     archiveClassifier.set('')
     archiveVersion.set('0.1.0')
+    
+    // Merge the AnyLogic exported library into our fat jar!
+    if (file('AnyLogicLibrary/WebToolkit.jar').exists()) {
+        from zipTree('AnyLogicLibrary/WebToolkit.jar')
+    }
+    
     relocate 'com.google.gson', 'com.anylogic.webtoolkit.shaded.gson'
     mergeServiceFiles()
     destinationDirectory.set(file("${projectDir}/dist"))
