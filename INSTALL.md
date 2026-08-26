@@ -1,51 +1,36 @@
-﻿# Instalacion — AnyLogic Web Toolkit
+# Installation — AnyLogic Web Toolkit
 
-## Requisitos
+## Requirements
 
-- AnyLogic 8.9.9 (PLE o superior)
+- AnyLogic 8.9.9 (PLE, University, or Professional)
 - Java 17
 - Windows x64
 
-## Pasos
+## Installation Steps
 
-1. **Descomprimir** `AnyLogicWebToolkit-0.1.0-win64.zip` en una carpeta permanente.
-   Ejemplo: `C:\AnyLogicLibs\AnyLogicWebToolkit\`
+1. **Download and Extract:**
+   Download the `AnyLogicWebToolkit-1.0.0.zip` from the Releases page and extract it to a permanent folder on your computer (e.g., `C:\AnyLogicLibs\AnyLogicWebToolkit\`).
 
-2. **Agregar el JAR al modelo:**
-   - Abre tu modelo en AnyLogic
-   - Ve a **Model → Properties → Dependencies**
-   - Haz clic en **Add JARs**
-   - Selecciona `AnyLogicWebToolkit.jar`
+2. **Add the Toolkit to your AnyLogic Palette:**
+   - Open AnyLogic.
+   - At the bottom of the **Palette** panel, click the `+` button (Add Library).
+   - Navigate to your extracted folder and select `WebToolkit.jar`.
+   - The `WebToolkit` palette will now appear, containing the `WebApp` agent.
 
-3. **Directorio runtime:**
-   Si el folder `runtime/` esta junto al JAR, se detecta automaticamente.
-   Si esta en otra ubicacion, configurar al inicio del modelo:
-   ```java
-   WebRuntime.getInstance().initialize(
-       WebConfig.builder().runtimeDir(new File("C:/ruta/a/runtime/windows-amd64")).build()
-   );
-   ```
+3. **Runtime Directory:**
+   The Chromium binaries are massive (~180 MB) and will be downloaded automatically by the `jcefmaven` library on the very first run. 
+   - An internet connection is required during the first model execution.
+   - The binaries will be stored in `~/.webtoolkit/runtime/`.
 
-4. **Primera ejecucion:**
-   Si los binarios CEF no estan en `runtime/windows-amd64/`, jcefmaven los descargara
-   automaticamente (~180 MB). Requiere conexion a internet solo en la primera vez.
+## JVM Arguments (If needed)
 
-## JVM Arguments (si es necesario)
-
-Si AnyLogic muestra errores de modulo Java al cargar la libreria, agregar en
-**Preferences → Advanced → JVM Arguments**:
+If AnyLogic shows Java Module errors when loading the library, go to **Tools → Preferences → Advanced** and add the following to **JVM Arguments**:
 ```
 --add-opens=java.desktop/java.awt.peer=ALL-UNNAMED
 --add-opens=java.desktop/sun.awt=ALL-UNNAMED
 --add-opens=java.desktop/sun.awt.windows=ALL-UNNAMED
 ```
 
-## Verificacion
+## Verification
 
-Ejecutar el ejemplo `examples/basic/index.html` desde un modelo AnyLogic:
-```java
-WebRuntime.getInstance().initialize();
-WebDialog d = new WebDialog("examples/basic/index.html");
-d.getBridge().registerCommand("hello", (args, cb) -> cb.success("Hola desde AnyLogic!"));
-d.open();
-```
+To verify that the library is working, simply open the `examples/AnyLogicModels/BasicExample/BasicExample.alp` file and hit **Run**.

@@ -25,11 +25,15 @@
     <!-- Web Toolkit API -->
     <script src="http://webtoolkit/__webtk_api.js"></script>
     <script>
+        // Listen for the response event from AnyLogic
+        AnyLogic.events.on('helloResponse', (msg) => {
+            document.getElementById('result').innerText = "AnyLogic says: " + msg;
+        });
+
         document.getElementById('helloBtn').addEventListener('click', async () => {
             try {
-                // Call 'hello' command in AnyLogic and wait for response
-                const result = await AnyLogic.call("hello");
-                document.getElementById('result').innerText = "AnyLogic says: " + result;
+                // Call 'hello' command in AnyLogic
+                await AnyLogic.call("hello");
             } catch (error) {
                 console.error(error);
                 document.getElementById('result').innerText = "Error: " + error.message;

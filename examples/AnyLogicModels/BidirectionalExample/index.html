@@ -67,12 +67,12 @@
             }
         }
 
-        // Listen for events from AnyLogic
-        AnyLogic.on('timeUpdated', (data) => {
+        // Listen for events from Java
+        AnyLogic.events.on('timeUpdated', (data) => {
             document.getElementById('timeValue').innerText = data.time.toFixed(2);
         });
 
-        AnyLogic.on('populationChanged', (data) => {
+        AnyLogic.events.on('populationChanged', (data) => {
             document.getElementById('agentCount').innerText = data.count;
             log(`Population changed: ${data.count} agents`);
         });

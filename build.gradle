@@ -44,8 +44,12 @@ tasks.register('copyExamples', Copy) {
 tasks.register('buildDist') {
     group = 'build'
     description = 'Construye el JAR de distribucion en dist/'
-    dependsOn shadowJar, 'copyExamples'
+    dependsOn shadowJar
     doLast {
-        println 'AnyLogicWebToolkit.jar generado en dist/'
+        copy {
+            from "${projectDir}/dist/AnyLogicWebToolkit-0.1.0.jar"
+            into "${projectDir}/AnyLogicLibrary"
+        }
+        println 'AnyLogicWebToolkit-0.1.0.jar copiado a AnyLogicLibrary/'
     }
 }

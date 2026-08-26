@@ -82,7 +82,7 @@ public class WebRuntime {
     public void checkInitialized() {
         if (!initialized.get())
             throw new WebToolkitException("NOT_INITIALIZED",
-                "Llamar WebRuntime.getInstance().initialize() antes de usar el toolkit");
+                "Call WebRuntime.getInstance().initialize() before using the toolkit");
     }
 
     private File resolveRuntimeDir(WebConfig config) {

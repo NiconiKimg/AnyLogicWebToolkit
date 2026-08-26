@@ -2,7 +2,7 @@ package com.anylogic.webtoolkit.core;
 
 import java.io.File;
 
-/** Configuracion del toolkit. Usar WebConfig.builder() para construir. */
+/** Toolkit configuration. Use WebConfig.builder() to construct. */
 public class WebConfig {
 
     private File runtimeDir;

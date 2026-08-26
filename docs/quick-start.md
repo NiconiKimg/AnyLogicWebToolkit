@@ -21,42 +21,12 @@ This guide will show you how to embed your first web application into AnyLogic u
 
 ## 3. Initializing the Runtime
 
-To ensure the Chromium engine starts correctly and binds to the web interface, you must initialize it when the `WebApp` agent starts.
+The Chromium runtime is automatically initialized when the `WebApp` agent starts. You **do not** need to write any initialization code! 
 
-In the **On startup** action of your `webApp` block, add:
-
-```java
-// 1. Initialize Chromium (only happens once)
-com.anylogic.webtoolkit.core.WebRuntime.getInstance().initialize(new com.anylogic.webtoolkit.core.WebConfig());
-
-// 2. Create the Window
-dialog = new com.anylogic.webtoolkit.ui.WebDialog(htmlPath);
-dialog.setTitle(windowTitle);
-
-// 3. Setup incoming message handler (JS -> Java)
-dialog.getBridge().setDefaultCommandHandler((command, args, cb) -> {
-    Object data = (args != null && args.length > 0) ? args[0] : null;
-    this.onMessageReceived(command, data);
-    cb.success(null);
-});
-
-// 4. Setup ready event (to know when HTML finished loading)
-dialog.getBridge().registerCommand("__ready__", (args, cb) -> {
-    this.onReady();
-    cb.success(null);
-});
-
-// 5. Show the window
-dialog.open();
-```
-
-In the **On destroy** action of your `webApp` block, add:
-
-```java
-if (dialog != null) {
-    dialog.close();
-}
-```
+The `WebApp` block handles everything internally:
+- It initializes the `WebRuntime`.
+- It creates and opens the `WebDialog`.
+- It safely closes the Chromium engine when the model terminates.
 
 ## 4. Run your Model
 

@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
- * Almacén de estado thread-safe para sincronizar datos entre AnyLogic y JS.
+ * Thread-safe state store for syncing data between AnyLogic and JS.
  */
 public class StateSync {
 
@@ -18,7 +18,7 @@ public class StateSync {
     }
 
     /**
-     * Establece un valor en el estado.
+     * Sets a value in the state store.
      */
     public void set(String key, Object value) {
         if (value == null) {
@@ -57,7 +57,7 @@ public class StateSync {
     }
 
     /**
-     * Registra un listener que se ejecuta cuando el valor de una clave cambia en JS o Java.
+     * Registers a listener that triggers when a key's value changes in JS or Java.
      */
     public void onChange(String key, Consumer<Object> listener) {
         changeListeners.put(key, listener);

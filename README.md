@@ -9,7 +9,7 @@ AnyLogic Web Toolkit is an open-source library that empowers developers to seaml
 
 Powered by a native embedded Chromium engine (JCEF), it bypasses the limitations of the internal AnyLogic browser, giving you full control over DevTools, local filesystem access, and modern web standards.
 
-## 🌟 Features
+## Features
 
 - **Embedded Chromium Engine:** Fully isolated JCEF instance that runs natively within AnyLogic.
 - **Bidirectional Communication:** Send commands from JS to Java (`AnyLogic.call(...)`) and push real-time events from Java to JS (`bridge.emit(...)`).
@@ -17,39 +17,36 @@ Powered by a native embedded Chromium engine (JCEF), it bypasses the limitations
 - **Offline Capable:** Load local HTML files and assets seamlessly via the custom `http://webtoolkit/` protocol. No external web server required.
 - **Developer Tools:** Press `F12` during simulation to open standard Chrome DevTools for rapid UI debugging.
 
-## 🚀 Quick Start
+## Quick Start
 
 To install and start using the toolkit, check out the [Quick Start Guide](docs/quick-start.md).
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```text
 AnyLogicWebToolkit/
+├── AnyLogicLibrary/           # Source AnyLogic .alp library with the WebApp agent
 ├── docs/                      # Documentation and guides
-├── examples/                  # Ready-to-run HTML templates and AnyLogic models
-│   ├── AnyLogicModels/        # Source AnyLogic .alp files demonstrating the toolkit
-│   ├── basic/                 # Hello World example
-│   ├── bidirectional/         # Bidirectional communication example
-│   └── logistics/             # Logistics Digital Twin example
+├── examples/                  # Ready-to-run AnyLogic models with embedded HTML UIs
+│   └── AnyLogicModels/
+│       ├── BasicExample/      # Hello World example
+│       ├── Bidirectional/     # Two-way communication example
+│       └── Logistics/         # Logistics Digital Twin example
 ├── scripts/                   # Helper scripts for packaging and building
 ├── src/main/java/...          # Java source code for the Web Toolkit
 ├── build.gradle               # Gradle build script
 └── README.md
 ```
 
-## 📖 Documentation
+## Documentation
 
 - [Installation & Quick Start](docs/quick-start.md)
+- [Agent Configuration Guide](docs/agent-configuration.md)
 - [Communication (Java ↔ JS)](docs/communication.md)
 
-## 📦 Included Examples
+## Included Examples
 
-The `examples/` directory contains ready-to-run HTML templates:
-1. **`basic/`**: A simple Hello World demonstrating basic command execution.
-2. **`bidirectional/`**: Shows how to control simulation speed from JS and receive time/population updates from Java.
-3. **`logistics/`**: A complete Digital Twin dashboard using Leaflet maps and SheetJS, demonstrating real-time vehicle tracking and order dispatching.
-
-## ⚖️ License & Acknowledgements
-
-This project is licensed under the Apache License 2.0. 
-It uses JCEF (Java Chromium Embedded Framework) which is governed by a BSD license. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
+The `examples/AnyLogicModels/` directory contains ready-to-run AnyLogic models with integrated HTML UIs:
+1. **`BasicExample/`**: A simple Hello World demonstrating basic command execution.
+2. **`BidirectionalExample/`**: Shows how to control simulation speed from JS and receive time/population updates from Java.
+3. **`LogisticsDigitalTwin/`**: A complete Digital Twin dashboard using Leaflet maps and SheetJS, demonstrating real-time vehicle tracking and order dispatching.

@@ -21,7 +21,7 @@ public class WebFileSystem {
             try {
                 // We obtain an invisible dummy window to use the AWT native FileDialog
                 Frame parent = new Frame();
-                FileDialog fd = new FileDialog(parent, title != null ? title : "Seleccionar archivo", FileDialog.LOAD);
+                FileDialog fd = new FileDialog(parent, title != null ? title : "Select File", FileDialog.LOAD);
                 if (defaultName != null) fd.setFile(defaultName);
                 
                 fd.setVisible(true);
@@ -45,7 +45,7 @@ public class WebFileSystem {
         SwingUtilities.invokeLater(() -> {
             try {
                 Frame parent = new Frame();
-                FileDialog fd = new FileDialog(parent, title != null ? title : "Guardar archivo como", FileDialog.SAVE);
+                FileDialog fd = new FileDialog(parent, title != null ? title : "Save File As", FileDialog.SAVE);
                 if (defaultName != null) fd.setFile(defaultName);
                 
                 fd.setVisible(true);

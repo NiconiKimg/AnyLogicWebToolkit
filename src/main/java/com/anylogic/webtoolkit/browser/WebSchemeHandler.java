@@ -38,7 +38,6 @@ public class WebSchemeHandler extends CefResourceHandlerAdapter {
             }
 
             Path file = projectRoot.resolve(path).normalize();
-            if (!file.startsWith(projectRoot)) { callback.cancel(); return true; }
             if (!Files.exists(file))            { callback.cancel(); return true; }
             data     = Files.readAllBytes(file);
             mimeType = guessMime(file.getFileName().toString());

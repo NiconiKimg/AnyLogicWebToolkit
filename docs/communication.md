@@ -31,19 +31,17 @@ async function dispatchTruck() {
 }
 ```
 
-**Java (AnyLogic `WebApp` Block -> `onMessageReceived`):**
+**Java (AnyLogic `WebApp` Block -> `On message received` action):**
 ```java
 if (type.equals("createOrder")) {
     // Cast the JSON object to a Java Map
     java.util.Map<String, Object> dataMap = (java.util.Map<String, Object>) data;
     
-    // Extract variables
+    String id = (String) dataMap.get("id");
     String priority = (String) dataMap.get("priority");
     
-    // Interact with your model
-    traceln("Order priority: " + priority);
-    
-    // e.g., truck.moveTo(x, y);
+    // Call internal logic
+    main.createOrder(id, priority);
 }
 ```
 
@@ -53,27 +51,24 @@ if (type.equals("createOrder")) {
 
 Sometimes the simulation needs to push data to the web app (e.g., live vehicle positions, simulation time updates, or completion events).
 
-**Java (AnyLogic):**
-You can emit an event from anywhere in your model (e.g., inside a Vehicle agent's Cyclic Event or statechart) using the `bridge.emit()` method.
-
+**Java (AnyLogic Model):**
 ```java
-// Inside a Vehicle Agent:
-java.util.Map<String, Object> telemetry = new java.util.LinkedHashMap<>();
-telemetry.put("id", this.getId());
-telemetry.put("lat", this.getLatitude());
-telemetry.put("lng", this.getLongitude());
-
-// Send to JS
-((Main)get_Main()).webApp.dialog.getBridge().emit("vehicleMoved", telemetry);
+// Usually inside a cyclic event or statechart action
+// Emits the 'vehicleMoved' event to JS
+webApp.dialog.getBridge().emit("vehicleMoved", 
+    java.util.Map.of("lat", vehicle.getLat(), "lng", vehicle.getLng())
+);
 ```
 
 **JavaScript (Web UI):**
-Listen for the event using `AnyLogic.on()`.
-
 ```javascript
-AnyLogic.on("vehicleMoved", (telemetry) => {
-    console.log(`Vehicle ${telemetry.id} moved to: ${telemetry.lat}, ${telemetry.lng}`);
-    // Update map marker here...
+// Listen for events emitted by AnyLogic
+AnyLogic.events.on("vehicleMoved", (payload) => {
+    const lat = payload.lat;
+    const lng = payload.lng;
+    
+    // Update map marker
+    updateMarker(lat, lng);
 });
 ```
 

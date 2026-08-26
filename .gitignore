@@ -25,6 +25,9 @@ out/
 *.anylogic_db-wal
 .tmp/
 ~*
+*.alp.autosave
+*.alp.backup
+AnyLogicLibrary/*.jar
 
 # OS Generated
 .DS_Store

@@ -202,4 +202,7 @@ window.addEventListener('load', () => {
   AnyLogic.call('getOrders').then(data => {
     if (Array.isArray(data)) { listOrders.push(...data); renderList(); }
   }).catch(() => { /* model might not have this command on first load */ });
+  
+  // Notify Java that the UI is fully loaded
+  AnyLogic.call('__ready__').catch(e => console.warn(e));
 });

@@ -183,7 +183,14 @@ public class WebDialog {
             }
         });
 
-        String url = "http://webtoolkit/" + resourcePath;
+        String safePath = resourcePath;
+        try {
+            safePath = new java.io.File(resourcePath).getCanonicalPath().replace('\\', '/');
+        } catch (Exception e) {
+            LOG.warn("Could not resolve canonical path: " + e.getMessage());
+        }
+        
+        String url = "http://webtoolkit/" + safePath;
         browser = cefClient.createBrowser(url, false, false);
         bridge.setBrowser(browser);
 
