@@ -22,11 +22,8 @@ When you drag the `WebApp` agent from the WebToolkit palette onto your `Main` ca
 - The default is `1200`×`800`.
 - The window is resizable by the user during execution.
 
-## 4. resizable (boolean)
-**Description:** Controls whether the user can resize the Chromium window.
-**Usage:** Set to `true` or `false`.
 
-## 5. On message received (Action)
+## 4. On message received (Action)
 **Description:** This is the most important callback. It triggers whenever your JavaScript code calls `AnyLogic.call(type, data)`.
 **Available Local Variables:**
 - `type` (String): The name of the command sent from JS.
@@ -47,7 +44,7 @@ if (type.equals("dispatchTruck")) {
 }
 ```
 
-## 6. On ready (Action)
+## 5. On ready (Action)
 **Description:** This action triggers when the HTML page is fully loaded, but **only if** the web page explicitly notifies Java.
 **Usage:** Use this hook to send initial state data from your simulation to the web interface. 
 

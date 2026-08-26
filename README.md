@@ -18,6 +18,9 @@ Powered by a native embedded Chromium engine (JCEF), it bypasses the limitations
 - **Offline Capable:** Load local HTML files and assets seamlessly via the custom `http://webtoolkit/` protocol. No external web server required.
 - **Developer Tools:** Press `F12` during simulation to open standard Chrome DevTools for rapid UI debugging.
 
+> [!NOTE]
+> **First-time usage:** The first time you run a model, the toolkit will automatically download the required Chromium engine binaries (JCEF) for your operating system in the background. This may take a minute or two depending on your connection. Subsequent runs will start instantly.
+
 ## Quick Start
 
 To install and start using the toolkit, check out the [Quick Start Guide](docs/quick-start.md).
