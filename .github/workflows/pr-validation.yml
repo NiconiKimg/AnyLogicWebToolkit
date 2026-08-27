@@ -7,12 +7,15 @@ on:
       - main
       - develop
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v6
@@ -24,3 +27,9 @@ jobs:
       - name: Compile and Test
         run: ./gradlew compileJava test
 
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report-pr
+          path: build/reports/tests/
