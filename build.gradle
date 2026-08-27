@@ -34,15 +34,41 @@ javadoc {
     options.header = "AnyLogic Web Toolkit ${version}"
 }
 
+tasks.register('patchAnyLogicLibrary', Copy) {
+    from zipTree('AnyLogicLibrary/WebToolkit.jar')
+    into "${layout.buildDirectory.get().asFile}/anylogic_unpacked"
+    
+    doLast {
+        def libXml = file("${layout.buildDirectory.get().asFile}/anylogic_unpacked/library.xml")
+        if (libXml.exists()) {
+            def parser = new groovy.xml.XmlParser(false, false)
+            def root = parser.parse(libXml)
+            
+            // Remove ClassPathEntry nodes referencing .jar files
+            def toRemove = root.'**'.ClassPathEntry.findAll { entry ->
+                entry.ResourceReference?.ClassName?.text()?.contains(".jar")
+            }
+            toRemove.each { it.parent().remove(it) }
+            
+            // Remove Resource nodes referencing .jar files
+            def toRemoveRes = root.'**'.Resource.findAll { res ->
+                res.Path?.text()?.contains(".jar")
+            }
+            toRemoveRes.each { it.parent().remove(it) }
+            
+            libXml.text = groovy.xml.XmlUtil.serialize(root)
+        }
+    }
+}
+
 shadowJar {
+    dependsOn patchAnyLogicLibrary
     archiveBaseName.set('AnyLogicWebToolkit')
     archiveClassifier.set('')
     archiveVersion.set('0.1.0')
     
-    // Merge the AnyLogic exported library into our fat jar!
-    if (file('AnyLogicLibrary/WebToolkit.jar').exists()) {
-        from zipTree('AnyLogicLibrary/WebToolkit.jar')
-    }
+    // Merge the modified AnyLogic exported library into our fat jar!
+    from "${layout.buildDirectory.get().asFile}/anylogic_unpacked"
     
     relocate 'com.google.gson', 'com.anylogic.webtoolkit.shaded.gson'
     mergeServiceFiles()
