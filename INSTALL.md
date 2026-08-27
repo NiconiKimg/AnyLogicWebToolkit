@@ -10,11 +10,12 @@
 
 1. **Download and Extract:**
    Download the `AnyLogicWebToolkit-0.1.0.zip` from the Releases page and extract it to a permanent folder on your computer (e.g., `C:\AnyLogicLibs\AnyLogicWebToolkit\`).
+   *(Alternatively, you can download just the `AnyLogicWebToolkit-0.1.0.jar` directly if you don't need the examples and docs).*
 
 2. **Add the Toolkit to your AnyLogic Palette:**
    - Open AnyLogic.
    - At the bottom of the **Palette** panel, click the `+` button (Add Library).
-   - Navigate to your extracted folder and select `WebToolkit.jar`.
+   - Navigate to your extracted folder (or where you downloaded the file) and select `AnyLogicWebToolkit-0.1.0.jar`.
    - The `WebToolkit` palette will now appear, containing the `WebApp` agent.
 
 3. **Runtime Directory:**
