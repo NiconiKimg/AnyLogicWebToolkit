@@ -4,11 +4,11 @@ This guide will show you how to embed your first web application into AnyLogic u
 
 ## 1. Installation
 
-1. Download the latest `AnyLogicWebToolkit-x.x.x.zip` from the Releases page.
-2. Extract the contents to a safe folder on your computer.
+1. Download the latest `AnyLogicWebToolkit-x.x.x.jar` (or the `.zip` if you want the examples) from the Releases page.
+2. If you downloaded the `.zip`, extract the contents to a safe folder on your computer.
 3. Open your AnyLogic 8.9.9+ project.
 4. In AnyLogic, at the bottom of the **Palette** panel, click the **+** button (Add Library).
-5. Navigate to your extracted folder, select `WebToolkit.jar`, and click **Open**.
+5. Navigate to your downloaded `AnyLogicWebToolkit-x.x.x.jar` file and click **Open**.
 6. The `WebToolkit` palette will now appear in your AnyLogic IDE containing the `WebApp` agent block.
 
 ## 2. Setting up the Agent
