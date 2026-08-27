@@ -1,0 +1,59 @@
+name: Bug Report
+description: Create a report to help us improve the library
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: anylogic_version
+    attributes:
+      label: AnyLogic VersionDescription: The project cannot be built until build path errors are resolved. Location: Model - Model
+      description: What version of AnyLogic are you using? (e.g. 8.9.9)
+      placeholder: "8.9.9"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: What operating system are you using?
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Please provide clear steps to reproduce the issue.
+      placeholder: |
+        1. Add WebApp agent to Main
+        2. Set htmlPath to 'index.html'
+        3. Run the model...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error logs or screenshots
+      description: Paste any relevant error logs or drag-and-drop screenshots here.
+    validations:
+      required: false
