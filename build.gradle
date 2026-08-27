@@ -65,7 +65,7 @@ shadowJar {
     dependsOn patchAnyLogicLibrary
     archiveBaseName.set('AnyLogicWebToolkit')
     archiveClassifier.set('')
-    archiveVersion.set('0.1.0')
+    archiveVersion.set(project.version.toString())
     
     // Merge the modified AnyLogic exported library into our fat jar!
     from "${layout.buildDirectory.get().asFile}/anylogic_unpacked"
@@ -86,9 +86,9 @@ tasks.register('buildDist') {
     dependsOn shadowJar
     doLast {
         copy {
-            from "${projectDir}/dist/AnyLogicWebToolkit-0.1.0.jar"
+            from "${projectDir}/dist/AnyLogicWebToolkit-${project.version}.jar"
             into "${projectDir}/AnyLogicLibrary"
         }
-        println 'AnyLogicWebToolkit-0.1.0.jar copied to AnyLogicLibrary/'
+        println "AnyLogicWebToolkit-${project.version}.jar copied to AnyLogicLibrary/"
     }
 }

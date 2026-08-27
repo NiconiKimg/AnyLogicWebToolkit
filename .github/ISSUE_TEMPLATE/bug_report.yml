@@ -9,7 +9,7 @@ body:
   - type: input
     id: anylogic_version
     attributes:
-      label: AnyLogic VersionDescription: The project cannot be built until build path errors are resolved. Location: Model - Model
+      label: AnyLogic Version
       description: What version of AnyLogic are you using? (e.g. 8.9.9)
       placeholder: "8.9.9"
     validations:
