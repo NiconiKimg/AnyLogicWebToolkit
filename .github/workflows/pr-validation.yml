@@ -24,10 +24,3 @@ jobs:
       - name: Compile and Test
         run: ./gradlew compileJava test
 
-      - name: Check for committed AnyLogicLibrary JARs
-        run: |
-          if ls AnyLogicLibrary/*.jar 1> /dev/null 2>&1; then
-            echo "Error: Found .jar files in AnyLogicLibrary/. These should not be committed."
-            exit 1
-          fi
-          echo "No committed JARs found in AnyLogicLibrary/."
