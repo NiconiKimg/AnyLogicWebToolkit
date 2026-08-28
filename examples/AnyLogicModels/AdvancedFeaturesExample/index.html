@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Features Showcase</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --border: #334155;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        .badge {
+            background: var(--border);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="text"],
+        textarea {
+            flex: 1;
+            background: #0b1120;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+
+        textarea {
+            height: 70px;
+            resize: none;
+        }
+
+        button {
+            background: var(--accent);
+            color: #0f172a;
+            font-weight: 600;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+            color: white;
+        }
+
+        button.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        button.outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        button.outline:hover {
+            background: var(--accent);
+            color: #0f172a;
+        }
+
+        .console {
+            background: #000;
+            color: #4ade80;
+            font-family: monospace;
+            font-size: 0.8rem;
+            padding: 10px;
+            border-radius: 6px;
+            height: 100px;
+            overflow-y: auto;
+        }
+
+        .val-display {
+            font-family: monospace;
+            color: var(--warning);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>AnyLogic Web Toolkit — Advanced Features</h1>
+        <!-- 1. ANYLOGIC.RUNTIME -->
+        <div class="row">
+            <span class="badge" id="runtimeInfo">Loading runtime...</span>
+        </div>
+    </header>
+
+    <div class="grid">
+
+        <!-- 2. SHARED STATE (AnyLogic.state) -->
+        <div class="card">
+            <h2>1. Shared State (StateSync)</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Reactive key-value synchronization.</p>
+            <div class="row">
+                <span>'globalTarget' state:</span>
+                <span class="val-display" id="stateTargetVal">---</span>
+            </div>
+            <div class="row">
+                <input type="text" id="inputTarget" placeholder="New target value">
+                <button onclick="setSharedState()">Save to State</button>
+            </div>
+            <div class="row">
+                <button class="outline" onclick="readSharedState()">Read from State</button>
+                <span id="readResult" style="font-size: 0.85rem;"></span>
+            </div>
+        </div>
+
+        <!-- 3. DIALOG CONTROL (AnyLogic.dialog) -->
+        <div class="card">
+            <h2>2. Dialog Control</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Native window control from JS.</p>
+            <div class="row">
+                <input type="text" id="inputTitle" placeholder="New window title">
+                <button onclick="updateTitle()">Change Title</button>
+            </div>
+            <div class="row" style="margin-top: auto;">
+                <button class="danger" onclick="closeDialog()">Close Window (dialog.close)</button>
+            </div>
+        </div>
+
+        <!-- 4. EVENT VARIANTS (once & off) -->
+        <div class="card">
+            <h2>3. Event Listeners (once & off)</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Single execution and dynamic unsubscription.</p>
+            <div class="row">
+                <button onclick="listenOnce()">Subscribe to 'secretToken' (once)</button>
+                <button class="outline" onclick="requestSecret()">Request Token from Java</button>
+            </div>
+            <div class="row">
+                <button id="btnToggleFeed" onclick="toggleFeed()">Stop Feed (off)</button>
+                <span style="font-size: 0.85rem;" id="feedStatus">Feed: Active</span>
+            </div>
+            <div class="console" id="eventLog">Waiting for events...</div>
+        </div>
+
+        <!-- 5. FILE SYSTEM TEXT MODE (AnyLogic.files with isBase64=false) -->
+        <div class="card">
+            <h2>4. File System (UTF-8 Text)</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Direct text/JSON file reading and writing.</p>
+            <textarea id="fileContent" placeholder="Type something to save to disk..."></textarea>
+            <div class="row">
+                <button class="outline" onclick="saveTextFile()">Save TXT</button>
+                <button class="outline" onclick="openTextFile()">Open TXT</button>
+            </div>
+            <span id="filePathInfo" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+        </div>
+
+        <!-- 6. PROGRAMMATIC JAVA BRIDGE (WebBridge.on / onAnyEvent) -->
+        <div class="card">
+            <h2>5. Java Bridge Commands</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Commands handled by listeners in Java.</p>
+            <div class="row">
+                <button onclick="callJavaCustom('auditLog')">Call customJavaCmd</button>
+                <button onclick="callJavaCustom('toggleVisibility')">Test hide()/show() in Java</button>
+            </div>
+            <div class="console" id="bridgeLog">Bridge console...</div>
+        </div>
+
+    </div>
+
+    <!-- Web Toolkit Magic API injection -->
+    <script src="http://webtoolkit/__webtk_api.js"></script>
+
+    <script>
+        const eventLog = document.getElementById('eventLog');
+        const bridgeLog = document.getElementById('bridgeLog');
+
+        function log(box, msg) {
+            const el = document.createElement('div');
+            el.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            box.appendChild(el);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // ── 1. RUNTIME INFO ──
+        window.addEventListener('load', () => {
+            document.getElementById('runtimeInfo').textContent =
+                `v${AnyLogic.runtime.version} (${AnyLogic.runtime.platform})`;
+
+            // ── 2. SHARED STATE: Subscribe ──
+            AnyLogic.state.subscribe('globalTarget', (newVal) => {
+                document.getElementById('stateTargetVal').textContent = newVal || '(empty)';
+                log(eventLog, `State 'globalTarget' changed to: ${newVal}`);
+            });
+
+            // Start listening to the continuous feed
+            startFeed();
+
+            // Notify Java that the UI is ready
+            AnyLogic.call('__ready__').catch(console.warn);
+        });
+
+        // ── 2. SHARED STATE: Get & Set ──
+        async function setSharedState() {
+            const val = document.getElementById('inputTarget').value;
+            await AnyLogic.state.set('globalTarget', val);
+            document.getElementById('inputTarget').value = '';
+        }
+
+        async function readSharedState() {
+            const val = await AnyLogic.state.get('globalTarget');
+            document.getElementById('readResult').textContent = `Read: ${val}`;
+        }
+
+        // ── 3. DIALOG CONTROL ──
+        function updateTitle() {
+            const title = document.getElementById('inputTitle').value;
+            if (title) AnyLogic.dialog.setTitle(title);
+        }
+
+        function closeDialog() {
+            if (confirm('Do you want to close the simulation window?')) {
+                AnyLogic.dialog.close();
+            }
+        }
+
+        // ── 4. EVENT VARIANTS (once & off) ──
+        function listenOnce() {
+            log(eventLog, "Listening to 'secretToken' with .once()...");
+            AnyLogic.events.once('secretToken', (data) => {
+                log(eventLog, `Token received (single execution)!: ${data.token}`);
+            });
+        }
+
+        function requestSecret() {
+            AnyLogic.call('requestToken');
+        }
+
+        // Feed with toggle using .on() and .off()
+        let feedActive = false;
+        const feedHandler = (data) => {
+            log(eventLog, `Live Feed: tick=${data.tick}`);
+        };
+
+        function startFeed() {
+            if (!feedActive) {
+                AnyLogic.events.on('feedTick', feedHandler);
+                feedActive = true;
+                document.getElementById('btnToggleFeed').textContent = "Stop Feed (off)";
+                document.getElementById('feedStatus').textContent = "Feed: Active";
+            }
+        }
+
+        function stopFeed() {
+            if (feedActive) {
+                AnyLogic.events.off('feedTick', feedHandler);
+                feedActive = false;
+                document.getElementById('btnToggleFeed').textContent = "Resume Feed (on)";
+                document.getElementById('feedStatus').textContent = "Feed: Paused";
+                log(eventLog, "Listener removed with .off()");
+            }
+        }
+
+        function toggleFeed() {
+            if (feedActive) stopFeed(); else startFeed();
+        }
+
+        // ── 5. FILE SYSTEM TEXT MODE (isBase64 = false) ──
+        async function saveTextFile() {
+            const text = document.getElementById('fileContent').value;
+            const path = await AnyLogic.files.saveDialog("Save text file", "notes.txt");
+            if (path) {
+                // Save as UTF-8 plain text (isBase64 = false)
+                await AnyLogic.files.write(path, text, false);
+                document.getElementById('filePathInfo').textContent = `Saved to: ${path}`;
+            }
+        }
+
+        async function openTextFile() {
+            const path = await AnyLogic.files.openDialog("Open text file", "*.txt");
+            if (path) {
+                // Read as UTF-8 plain text (isBase64 = false)
+                const text = await AnyLogic.files.read(path, false);
+                document.getElementById('fileContent').value = text;
+                document.getElementById('filePathInfo').textContent = `Read from: ${path}`;
+            }
+        }
+
+        // ── 6. JAVA BRIDGE COMMANDS ──
+        async function callJavaCustom(action) {
+            try {
+                log(bridgeLog, `Calling command: ${action}`);
+                await AnyLogic.call(action, { timestamp: Date.now() });
+                log(bridgeLog, `Command ${action} completed.`);
+            } catch (err) {
+                log(bridgeLog, `Error: ${err.message || err}`);
+            }
+        }
+    </script>
+</body>
+
+</html>
