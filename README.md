@@ -35,7 +35,8 @@ AnyLogicWebToolkit/
 │   └── AnyLogicModels/
 │       ├── BasicExample/      # Hello World example
 │       ├── BidirectionalExample/  # Two-way communication example
-│       └── LogisticsDigitalTwin/ # Logistics Digital Twin example
+│       ├── LogisticsDigitalTwin/ # Logistics Digital Twin example
+│       └── SmartFactoryTwin/  # Advanced 3D React Digital Twin example
 ├── src/main/java/...          # Java source code for the Web Toolkit
 ├── build.gradle               # Gradle build script
 └── README.md
@@ -54,3 +55,4 @@ The `examples/AnyLogicModels/` directory contains ready-to-run AnyLogic models w
 1. **`BasicExample/`**: A simple Hello World demonstrating basic command execution.
 2. **`BidirectionalExample/`**: Shows how to control simulation speed from JS and receive time/population updates from Java.
 3. **`LogisticsDigitalTwin/`**: A complete Digital Twin dashboard using Leaflet maps and SheetJS, demonstrating real-time vehicle tracking and order dispatching.
+4. **`SmartFactoryTwin/`**: An advanced 3D Digital Twin using React, Vite, and Three.js, featuring a glassmorphism dashboard, real-time metrics, and bidirectional control.
