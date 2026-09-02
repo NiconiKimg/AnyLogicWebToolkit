@@ -1,0 +1,142 @@
+:root {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-hover: #0284c7;
+    --border: #334155;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    padding: 24px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+h1 {
+    font-size: 1.5rem;
+    color: var(--text);
+}
+
+.badge {
+    background: var(--border);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--accent);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+input[type="text"],
+textarea {
+    flex: 1;
+    background: #0b1120;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+textarea {
+    height: 70px;
+    resize: none;
+}
+
+button {
+    background: var(--accent);
+    color: #0f172a;
+    font-weight: 600;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 0.85rem;
+}
+
+button:hover {
+    background: var(--accent-hover);
+    color: white;
+}
+
+button.danger {
+    background: var(--danger);
+    color: white;
+}
+
+button.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+
+button.outline:hover {
+    background: var(--accent);
+    color: #0f172a;
+}
+
+.console {
+    background: #000;
+    color: #4ade80;
+    font-family: monospace;
+    font-size: 0.8rem;
+    padding: 10px;
+    border-radius: 6px;
+    height: 100px;
+    overflow-y: auto;
+}
+
+.val-display {
+    font-family: monospace;
+    color: var(--warning);
+    font-weight: bold;
+}

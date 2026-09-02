@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Features Showcase</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>AnyLogic Web Toolkit — Advanced Features</h1>
+        <!-- 1. ANYLOGIC.RUNTIME -->
+        <div class="row">
+            <span class="badge" id="runtimeInfo">Loading runtime...</span>
+        </div>
+    </header>
+
+    <div class="grid">
+
+        <!-- 2. SHARED STATE (AnyLogic.state) -->
+        <div class="card">
+            <h2>1. Shared State (StateSync)</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Reactive key-value synchronization.</p>
+            <div class="row">
+                <span>'globalTarget' state:</span>
+                <span class="val-display" id="stateTargetVal">---</span>
+            </div>
+            <div class="row">
+                <input type="text" id="inputTarget" placeholder="New target value">
+                <button onclick="setSharedState()">Save to State</button>
+            </div>
+            <div class="row">
+                <button class="outline" onclick="readSharedState()">Read from State</button>
+                <span id="readResult" style="font-size: 0.85rem;"></span>
+            </div>
+        </div>
+
+        <!-- 3. DIALOG CONTROL (AnyLogic.dialog) -->
+        <div class="card">
+            <h2>2. Dialog Control</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Native window control from JS.</p>
+            <div class="row">
+                <input type="text" id="inputTitle" placeholder="New window title">
+                <button onclick="updateTitle()">Change Title</button>
+            </div>
+            <div class="row" style="margin-top: auto;">
+                <button class="danger" onclick="closeDialog()">Close Window (dialog.close)</button>
+            </div>
+        </div>
+
+        <!-- 4. EVENT VARIANTS (once & off) -->
+        <div class="card">
+            <h2>3. Event Listeners (once & off)</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Single execution and dynamic unsubscription.</p>
+            <div class="row">
+                <button onclick="listenOnce()">Subscribe to 'secretToken' (once)</button>
+                <button class="outline" onclick="requestSecret()">Request Token from Java</button>
+            </div>
+            <div class="row">
+                <button id="btnToggleFeed" onclick="toggleFeed()">Stop Feed (off)</button>
+                <span style="font-size: 0.85rem;" id="feedStatus">Feed: Active</span>
+            </div>
+            <div class="console" id="eventLog">Waiting for events...</div>
+        </div>
+
+        <!-- 5. FILE SYSTEM TEXT MODE (AnyLogic.files with isBase64=false) -->
+        <div class="card">
+            <h2>4. File System (UTF-8 Text)</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Direct text/JSON file reading and writing.</p>
+            <textarea id="fileContent" placeholder="Type something to save to disk..."></textarea>
+            <div class="row">
+                <button class="outline" onclick="saveTextFile()">Save TXT</button>
+                <button class="outline" onclick="openTextFile()">Open TXT</button>
+            </div>
+            <span id="filePathInfo" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+        </div>
+
+        <!-- 6. PROGRAMMATIC JAVA BRIDGE (WebBridge.on / onAnyEvent) -->
+        <div class="card">
+            <h2>5. Java Bridge Commands</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Commands handled by listeners in Java.</p>
+            <div class="row">
+                <button onclick="callJavaCustom('auditLog')">Call customJavaCmd</button>
+                <button onclick="callJavaCustom('toggleVisibility')">Test hide()/show() in Java</button>
+            </div>
+            <div class="console" id="bridgeLog">Bridge console...</div>
+        </div>
+
+    </div>
+
+    <!-- Web Toolkit Magic API injection -->
+    <script src="http://webtoolkit/__webtk_api.js"></script>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

@@ -4,16 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bidirectional Example</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; display: flex; flex-direction: column; align-items: center; padding: 2rem; margin: 0; }
-        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem; width: 100%; max-width: 500px; }
-        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
-        .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        button { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
-        button:hover { background-color: #0056b3; }
-        .value-box { font-family: monospace; background: #eee; padding: 4px 8px; border-radius: 4px; font-size: 1.2rem; min-width: 60px; text-align: center; }
-        .log-box { background: #333; color: #0f0; font-family: monospace; padding: 1rem; border-radius: 8px; height: 150px; overflow-y: auto; width: 100%; max-width: 500px; font-size: 0.9rem; }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <h1>Bidirectional Communication</h1>
@@ -48,34 +39,6 @@
 
     <!-- Web Toolkit API -->
     <script src="http://webtoolkit/__webtk_api.js"></script>
-    <script>
-        const logs = document.getElementById('logs');
-        function log(msg) {
-            const div = document.createElement('div');
-            div.innerText = `> ${msg}`;
-            logs.appendChild(div);
-            logs.scrollTop = logs.scrollHeight;
-        }
-
-        async function setSpeed(speed) {
-            try {
-                log(`Sending command: setSpeed(${speed})`);
-                await AnyLogic.call("setSpeed", { speed: speed });
-                log(`Command successful.`);
-            } catch (error) {
-                log(`Error: ${error.message}`);
-            }
-        }
-
-        // Listen for events from Java
-        AnyLogic.events.on('timeUpdated', (data) => {
-            document.getElementById('timeValue').innerText = data.time.toFixed(2);
-        });
-
-        AnyLogic.events.on('populationChanged', (data) => {
-            document.getElementById('agentCount').innerText = data.count;
-            log(`Population changed: ${data.count} agents`);
-        });
-    </script>
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -4,8 +4,8 @@
 
 const map = L.map('map').setView([-34.6037, -58.3816], 13);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '© CARTO',
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   maxZoom: 19
 }).addTo(map);
 
@@ -124,14 +124,14 @@ function renderList() {
 
   listOrders.forEach(p => {
     const el = document.createElement('div');
-    el.className = 'pedido-item';
+    el.className = 'order-item';
     el.innerHTML = `
-      <div class="pedido-info">
-        <div class="pedido-id">${p.id || 'Pending'}</div>
-        <div class="pedido-dest">${p.destination}</div>
-        <div class="pedido-desc">${p.description}</div>
+      <div class="order-info">
+        <div class="order-id">${p.id || 'Pending'}</div>
+        <div class="order-dest">${p.destination}</div>
+        <div class="order-desc">${p.description}</div>
       </div>
-      <span class="pedido-badge badge-${p.priority.toLowerCase()}">${p.priority}</span>
+      <span class="order-badge badge-${p.priority.toLowerCase()}">${p.priority}</span>
       <button class="btn-delete" title="Remove">✕</button>
     `;
     el.querySelector('.btn-delete').onclick = () => orders.remove(p.id);
