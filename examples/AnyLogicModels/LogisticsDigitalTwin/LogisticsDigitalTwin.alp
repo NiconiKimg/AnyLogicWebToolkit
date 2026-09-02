@@ -4,7 +4,7 @@
 	         AnyLogic Project File
 *************************************************
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.9.202607020720" AlpVersion="8.9.9">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.9.202606170507" AlpVersion="8.9.9">
 <Model>
 	<Id>1787532573125</Id>
 	<Name><![CDATA[LogisticsDigitalTwin]]></Name>
@@ -181,8 +181,8 @@
 							<Name><![CDATA[onReady]]></Name>
 							<Value Class="CodeValue">
 								<Code><![CDATA[java.util.Map<String, Object> dep = new java.util.LinkedHashMap<>();
-dep.put("lat", deposito.getLatitude());
-dep.put("lng", deposito.getLongitude());
+dep.put("lat", depot.getLatitude());
+dep.put("lng", depot.getLongitude());
 webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
 							</Value>
 						</Parameter>
@@ -195,9 +195,9 @@ webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
     double lng = ((Number) payload.get("lng")).doubleValue();
     String pId = (String) payload.get("id");
     
-    vehiculo.jumpTo(deposito);
-    vehiculo.pedidoId = pId;
-    vehiculo.moveTo(lat, lng);
+    vehicle.jumpTo(depot);
+    vehicle.orderId = pId;
+    vehicle.moveTo(lat, lng);
     traceln("Truck dispatched for order: " + pId);
 }
 ]]></Code>
@@ -232,7 +232,7 @@ webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
 				</EmbeddedObject>
 				<EmbeddedObject>
 					<Id>1787533868045</Id>
-					<Name><![CDATA[vehiculo]]></Name>
+					<Name><![CDATA[vehicle]]></Name>
 					<X>-70</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -241,18 +241,18 @@ webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
 					<PresentationId>1787533868047</PresentationId>
 					<ActiveObjectClass>
 						<PackageName><![CDATA[anylogicdemomodel]]></PackageName>
-						<ClassName><![CDATA[Vehiculo]]></ClassName>
+						<ClassName><![CDATA[Vehicle]]></ClassName>
 					</ActiveObjectClass>
 					<GenericParameterSubstitute>
 						<GenericParameterSubstituteReference>
 							<PackageName><![CDATA[anylogicdemomodel]]></PackageName>
-							<ClassName><![CDATA[Vehiculo]]></ClassName>
+							<ClassName><![CDATA[Vehicle]]></ClassName>
 							<ItemName><![CDATA[1787532967118]]></ItemName>
 						</GenericParameterSubstituteReference>
 					</GenericParameterSubstitute>
 					<Parameters>
 						<Parameter>
-							<Name><![CDATA[pedidoId]]></Name>
+							<Name><![CDATA[orderId]]></Name>
 						</Parameter>
 					</Parameters>
 					<ReplicationFlag>false</ReplicationFlag>
@@ -268,7 +268,7 @@ webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
 					<RowCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</RowCode>
-					<NodeCode><![CDATA[deposito]]></NodeCode>
+					<NodeCode><![CDATA[depot]]></NodeCode>
 					<LocationNameCode Class="CodeValue">
 						<Code><![CDATA[""]]></Code>
 					</LocationNameCode>
@@ -336,7 +336,7 @@ webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
 			<Presentation>
 				<GISPoint>
 					<Id>1787532940286</Id>
-					<Name><![CDATA[deposito]]></Name>
+					<Name><![CDATA[depot]]></Name>
 					<X>225</X><Y>170</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -362,7 +362,7 @@ webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
 				</Level>
 				<EmbeddedObjectPresentation>
 					<Id>1787533868047</Id>
-					<Name><![CDATA[vehiculo_presentation]]></Name>
+					<Name><![CDATA[vehicle_presentation]]></Name>
 					<X>210</X><Y>-120</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -384,7 +384,7 @@ webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
 		<!--   =========   Active Object Class   ========  -->
 		<ActiveObjectClass>
 			<Id>1787532967113</Id>
-			<Name><![CDATA[Vehiculo]]></Name>
+			<Name><![CDATA[Vehicle]]></Name>
 			<Generic>false</Generic>
 			<GenericParameter>
 				<Id>1787532967118</Id>
@@ -415,8 +415,8 @@ webApp.dialog.getBridge().emit("setDepot", dep);]]></Code>
 					<Code><![CDATA[60]]></Code>
 					<Unit Class="SpeedUnits"><![CDATA[MPS]]></Unit>
 				</VelocityCode>
-				<OnArrival><![CDATA[((Main)get_Main()).webApp.dialog.getBridge().emit("orderCompleted", this.pedidoId);
-this.pedidoId = null;
+				<OnArrival><![CDATA[((Main)get_Main()).webApp.dialog.getBridge().emit("orderCompleted", this.orderId);
+this.orderId = null;
 ]]></OnArrival>
 				<PhysicalLength Class="CodeUnitValue">
 					<Code><![CDATA[1]]></Code>
@@ -486,7 +486,7 @@ this.pedidoId = null;
 			<Variables>
 				<Variable Class="Parameter">
 					<Id>1787532983717</Id>
-					<Name><![CDATA[pedidoId]]></Name>
+					<Name><![CDATA[orderId]]></Name>
 					<X>40</X><Y>50</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -510,7 +510,7 @@ this.pedidoId = null;
 			<Events>
 				<Event>
 					<Id>1787533011796</Id>
-					<Name><![CDATA[EventoPosicion]]></Name>
+					<Name><![CDATA[PositionEvent]]></Name>
 					<X>40</X><Y>90</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -538,12 +538,12 @@ this.pedidoId = null;
 						</RecurrenceCode>
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
-					<Action><![CDATA[if (this.pedidoId != null) {
+					<Action><![CDATA[if (this.orderId != null) {
     java.util.Map<String, Object> d = new java.util.LinkedHashMap<>();
-    d.put("id", this.pedidoId);
+    d.put("id", this.orderId);
     d.put("lat", this.getLatitude());
     d.put("lng", this.getLongitude());
-    d.put("label", "Truck " + this.pedidoId);
+    d.put("label", "Truck " + this.orderId);
     
     ((Main)get_Main()).webApp.dialog.getBridge().emit("vehicleMoved", d);
 }
