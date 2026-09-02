@@ -20,17 +20,17 @@
 			<Name><![CDATA[Main]]></Name>
 			<StartupCode><![CDATA[// 1. WebBridge.onAnyEvent: Registers an audit log for all incoming commands
 webApp.dialog.getBridge().onAnyEvent((event, args) -> {
-    traceln("[Java onAnyEvent Audit] Evento recibido: " + event);
+    traceln("[Java onAnyEvent Audit] Event received: " + event);
 });
 
 // 2. WebBridge.on: Programmatic subscription to a specific command
 webApp.dialog.getBridge().on("auditLog", (event, args) -> {
-    traceln("[Java WebBridge.on] Comando específico 'auditLog' ejecutado.");
+    traceln("[Java WebBridge.on] Specific command 'auditLog' executed.");
 });
 
 // 3. Test hide() and show() from Java
 webApp.dialog.getBridge().on("toggleVisibility", (event, args) -> {
-    traceln("[Java] Ocultando ventana durante 2 segundos...");
+    traceln("[Java] Hiding window for 2 seconds...");
     webApp.dialog.hide();
     
     // Crear un hilo temporal para volver a mostrar la ventana
@@ -38,7 +38,7 @@ webApp.dialog.getBridge().on("toggleVisibility", (event, args) -> {
         try {
             Thread.sleep(2000);
             webApp.dialog.show();
-            traceln("[Java] Ventana mostrada nuevamente con show().");
+            traceln("[Java] Window shown again with show().");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,7 +47,7 @@ webApp.dialog.getBridge().on("toggleVisibility", (event, args) -> {
 
 // 4. StateSync.onAnyChange: React to changes in any StateSync key
 webApp.dialog.getStateSync().onAnyChange((key, value) -> {
-    traceln("[Java StateSync.onAnyChange] Clave modificada: " + key + " = " + value);
+    traceln("[Java StateSync.onAnyChange] Key modified: " + key + " = " + value);
 });
 ]]></StartupCode>
 			<Generic>false</Generic>
@@ -420,14 +420,6 @@ traceln("[Java] UI ready. 'globalTarget' state initialized.");
 			<BypassInitialScreen>true</BypassInitialScreen>
 		</SimulationExperiment>	
 	</Experiments>
-	<ModelResources>
-		<Resource>
-			<Id>1787883164473</Id>
-			<Path><![CDATA[WebToolkit.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-			<Location>FILE_SYSTEM</Location>
-		</Resource>
-	</ModelResources>
     <RequiredLibraryReference>
 		<LibraryName><![CDATA[com.anylogic.libraries.modules.markup_descriptors]]></LibraryName>
 		<VersionMajor>1</VersionMajor>
@@ -440,14 +432,6 @@ traceln("[Java] UI ready. 'globalTarget' state initialized.");
 		<VersionMinor>0</VersionMinor>
 		<VersionBuild>0</VersionBuild>
     </RequiredLibraryReference>
-	<ClassPathEntry>
-		<ResourceReference>
-			<PackageName><![CDATA[advancedfeaturesexample]]></PackageName>
-			<ClassName><![CDATA[WebToolkit.jar]]></ClassName>
-		</ResourceReference>
-		<Imported>true</Imported>
-		<Folder>false</Folder>
-	</ClassPathEntry>
 </Model>
 <ConvertersApplied>
 	<Uuid>9f7858c9-b2c8-4ead-9244-fd08833f642b</Uuid>
