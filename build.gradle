@@ -92,3 +92,10 @@ tasks.register('buildDist') {
         println "AnyLogicWebToolkit-${project.version}.jar copied to AnyLogicLibrary/"
     }
 }
+
+tasks.register('smokeTest', JavaExec) {
+    group = 'verification'
+    description = 'Launches a standalone WebDialog window to visually test CEF and the local HTTP server'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.anylogic.webtoolkit.ManualSmokeTest'
+}

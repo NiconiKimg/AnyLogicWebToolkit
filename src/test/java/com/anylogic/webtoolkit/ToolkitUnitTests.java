@@ -90,4 +90,74 @@ class ToolkitUnitTests {
             java.nio.file.Files.deleteIfExists(temp);
         }
     }
+
+    @Test
+    void localHttpServer_startAndStop() throws Exception {
+        var server = new com.anylogic.webtoolkit.server.LocalHttpServer(null, null);
+        assertFalse(server.isRunning());
+        assertEquals(-1, server.getPort());
+
+        server.start();
+        assertTrue(server.isRunning());
+        assertTrue(server.getPort() > 0);
+        assertTrue(server.getBaseUrl().startsWith("http://127.0.0.1:"));
+
+        server.stop();
+        assertFalse(server.isRunning());
+    }
+
+    @Test
+    void localHttpServer_servesFilesAndApi() throws Exception {
+        java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("webtk-server-test");
+        java.nio.file.Path fallbackDir = java.nio.file.Files.createTempDirectory("webtk-server-fb");
+
+        try {
+            java.nio.file.Path html = tempDir.resolve("index.html");
+            java.nio.file.Files.writeString(html, "<html><head><script src=\"http://webtoolkit/__webtk_api.js\"></script></head><body><h1>Hello</h1></body></html>");
+
+            java.nio.file.Path sharedAsset = fallbackDir.resolve("model.dae");
+            java.nio.file.Files.writeString(sharedAsset, "<COLLADA></COLLADA>");
+
+            var server = new com.anylogic.webtoolkit.server.LocalHttpServer(tempDir, fallbackDir);
+            server.start();
+
+            var client = java.net.http.HttpClient.newHttpClient();
+
+            // 1. Check index.html with legacy script rewrite
+            var req1 = java.net.http.HttpRequest.newBuilder(java.net.URI.create(server.getUrl("/index.html"))).GET().build();
+            var resp1 = client.send(req1, java.net.http.HttpResponse.BodyHandlers.ofString());
+            assertEquals(200, resp1.statusCode());
+            assertTrue(resp1.headers().firstValue("Content-Type").orElse("").contains("text/html"));
+            assertTrue(resp1.body().contains("/__webtk_api.js"));
+            assertFalse(resp1.body().contains("http://webtoolkit/__webtk_api.js"));
+
+            // 2. Check in-memory API script endpoint
+            var req2 = java.net.http.HttpRequest.newBuilder(java.net.URI.create(server.getUrl("/__webtk_api.js"))).GET().build();
+            var resp2 = client.send(req2, java.net.http.HttpResponse.BodyHandlers.ofString());
+            assertEquals(200, resp2.statusCode());
+            assertTrue(resp2.headers().firstValue("Content-Type").orElse("").contains("application/javascript"));
+            assertTrue(resp2.body().contains("window.AnyLogic ="));
+
+            // 3. Check fallback directory resolution and DAE mime
+            var req3 = java.net.http.HttpRequest.newBuilder(java.net.URI.create(server.getUrl("/model.dae"))).GET().build();
+            var resp3 = client.send(req3, java.net.http.HttpResponse.BodyHandlers.ofString());
+            assertEquals(200, resp3.statusCode());
+            assertEquals("model/vnd.collada+xml", resp3.headers().firstValue("Content-Type").orElse(""));
+            assertTrue(resp3.body().contains("<COLLADA>"));
+
+            // 4. Check 404 for missing file
+            var req4 = java.net.http.HttpRequest.newBuilder(java.net.URI.create(server.getUrl("/not_found.png"))).GET().build();
+            var resp4 = client.send(req4, java.net.http.HttpResponse.BodyHandlers.ofString());
+            assertEquals(404, resp4.statusCode());
+
+            server.stop();
+        } finally {
+            java.nio.file.Files.walk(tempDir)
+                .sorted(java.util.Comparator.reverseOrder())
+                .forEach(p -> { try { java.nio.file.Files.deleteIfExists(p); } catch (Exception ignored) {} });
+            java.nio.file.Files.walk(fallbackDir)
+                .sorted(java.util.Comparator.reverseOrder())
+                .forEach(p -> { try { java.nio.file.Files.deleteIfExists(p); } catch (Exception ignored) {} });
+        }
+    }
 }
