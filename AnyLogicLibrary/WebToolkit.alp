@@ -631,7 +631,7 @@ dialog.open();
 		</Resource>
 		<Resource>
 			<Id>1787708497913</Id>
-			<Path><![CDATA[AnyLogicWebToolkit-0.1.0.jar]]></Path>
+			<Path><![CDATA[AnyLogicWebToolkit-0.1.1.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
@@ -651,7 +651,7 @@ dialog.open();
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[webtoolkit]]></PackageName>
-			<ClassName><![CDATA[AnyLogicWebToolkit-0.1.0.jar]]></ClassName>
+			<ClassName><![CDATA[AnyLogicWebToolkit-0.1.1.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>true</Imported>
 		<Folder>false</Folder>
