@@ -4,8 +4,9 @@ The AnyLogic Web Toolkit allows seamless, asynchronous data exchange between you
 
 To enable communication, you must include the magic API script in your HTML file:
 ```html
-<script src="http://webtoolkit/__webtk_api.js"></script>
+<script src="/__webtk_api.js"></script>
 ```
+*(Note: `http://webtoolkit/__webtk_api.js` is also supported for backward compatibility).*
 
 This injects the global `AnyLogic` object into your JavaScript context.
 

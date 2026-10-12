@@ -31,9 +31,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.UUID;
+import com.anylogic.webtoolkit.server.LocalHttpServer;
 
 /**
  * A native window hosting an embedded Chromium browser and the toolkit's
@@ -71,6 +73,7 @@ public class WebDialog {
     private JFrame     dialog;
     private CefClient  cefClient;
     private CefBrowser browser;
+    private LocalHttpServer localServer;
     private WebAppState state = WebAppState.CREATED;
 
     /**
@@ -128,6 +131,9 @@ public class WebDialog {
     /** @return the current lifecycle state */
     public WebAppState    getState()       { return state; }
 
+    /** @return the {@link LocalHttpServer} instance if running, or {@code null} */
+    public LocalHttpServer getLocalServer() { return localServer; }
+
     /** @return {@code true} if the window exists and is currently visible */
     public boolean        isOpen()         { return dialog != null && dialog.isVisible(); }
 
@@ -163,12 +169,18 @@ public class WebDialog {
      * state transitions to {@code CLOSING} then {@code CLOSED} on the EDT.
      */
     public void close() {
-        if (dialog == null) return;
+        if (dialog == null && localServer == null) return;
         SwingUtilities.invokeLater(() -> {
             state = WebAppState.CLOSING;
             if (browser != null) browser.close(true);
-            dialog.dispose();
-            dialog = null;
+            if (localServer != null) {
+                localServer.stop();
+                localServer = null;
+            }
+            if (dialog != null) {
+                dialog.dispose();
+                dialog = null;
+            }
             state  = WebAppState.CLOSED;
             LOG.info("Closed: " + resourcePath);
         });
@@ -271,6 +283,8 @@ public class WebDialog {
             public boolean onBeforeBrowse(CefBrowser b, CefFrame f,
                                           CefRequest req, boolean isUserGesture, boolean isRedirect) {
                 String url = req.getURL();
+                if (localServer != null && url.startsWith(localServer.getBaseUrl())) return false;
+                if (url.startsWith("http://127.0.0.1:") || url.startsWith("http://localhost:")) return false;
                 if (url.startsWith("http://webtoolkit/")) return false;
                 if (permissions.isAllowed(Permission.INTERNET)
                         && (url.startsWith("https://") || url.startsWith("http://"))) return false;
@@ -279,14 +293,41 @@ public class WebDialog {
             }
         });
 
-        String safePath = resourcePath;
-        try {
-            safePath = new java.io.File(resourcePath).getCanonicalPath().replace('\\', '/');
-        } catch (Exception e) {
-            LOG.warn("Could not resolve canonical path: " + e.getMessage());
+        final Path projectRootNormalized = projectRoot.toAbsolutePath().normalize();
+        String url;
+        if (resourcePath.startsWith("http://") || resourcePath.startsWith("https://")) {
+            url = resourcePath;
+        } else {
+            Path targetPath = Paths.get(resourcePath);
+            if (!targetPath.isAbsolute()) {
+                targetPath = projectRootNormalized.resolve(targetPath);
+            }
+            targetPath = targetPath.normalize();
+
+            Path baseDir = Files.isDirectory(targetPath) ? targetPath : targetPath.getParent();
+            if (baseDir == null) {
+                baseDir = projectRootNormalized;
+            }
+            String entryFile = Files.isDirectory(targetPath) ? "index.html" : targetPath.getFileName().toString();
+
+            try {
+                localServer = new LocalHttpServer(baseDir, projectRootNormalized);
+                localServer.start();
+                url = localServer.getUrl("/" + entryFile);
+                LOG.info("Local HTTP server running at: " + localServer.getBaseUrl());
+            } catch (Exception e) {
+                LOG.error("Failed to start local HTTP server, falling back to scheme handler", e);
+                String safePath = resourcePath;
+                try {
+                    safePath = new java.io.File(resourcePath).getCanonicalPath().replace('\\', '/');
+                    while (safePath.startsWith("/")) safePath = safePath.substring(1);
+                } catch (Exception ex) {
+                    LOG.warn("Could not resolve canonical path: " + ex.getMessage());
+                }
+                url = "http://webtoolkit/" + safePath;
+            }
         }
 
-        String url = "http://webtoolkit/" + safePath;
         browser = cefClient.createBrowser(url, false, false);
         bridge.setBrowser(browser);
 

@@ -15,7 +15,7 @@ Powered by a native embedded Chromium engine (JCEF), it bypasses the limitations
 - **Embedded Chromium Engine:** Fully isolated JCEF instance that runs natively within AnyLogic.
 - **Bidirectional Communication:** Send commands from JS to Java (`AnyLogic.call(...)`) and push real-time events from Java to JS (`bridge.emit(...)`).
 - **File System API:** Native OS file dialogs (Open/Save) exposed safely to JavaScript without browser sandbox restrictions.
-- **Offline Capable:** Load local HTML files and assets seamlessly via the custom `http://webtoolkit/` protocol. No external web server required.
+- **Offline Capable:** Load local HTML files and assets seamlessly via an embedded local HTTP server. No external web server required.
 - **Developer Tools:** Press `F12` during simulation to open standard Chrome DevTools for rapid UI debugging.
 
 > [!NOTE]

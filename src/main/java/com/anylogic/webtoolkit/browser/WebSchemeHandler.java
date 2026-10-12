@@ -93,24 +93,35 @@ public class WebSchemeHandler extends CefResourceHandlerAdapter {
     private String extractPath(String url) {
         try {
             String path = new URI(url).getPath();
-            if (path != null && path.startsWith("/")) {
-                return path.substring(1);
+            while (path != null && path.startsWith("/")) {
+                path = path.substring(1);
             }
-            return "";
+            return path != null ? path : "";
         } catch (Exception e) { return ""; }
     }
 
     private String guessMime(String name) {
-        if (name.endsWith(".html") || name.endsWith(".htm")) return "text/html";
-        if (name.endsWith(".css"))   return "text/css";
-        if (name.endsWith(".js"))    return "application/javascript";
-        if (name.endsWith(".json"))  return "application/json";
-        if (name.endsWith(".png"))   return "image/png";
-        if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
-        if (name.endsWith(".svg"))   return "image/svg+xml";
-        if (name.endsWith(".ico"))   return "image/x-icon";
-        if (name.endsWith(".woff2")) return "font/woff2";
-        if (name.endsWith(".xlsx"))  return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        String lower = name.toLowerCase();
+        if (lower.endsWith(".html") || lower.endsWith(".htm")) return "text/html; charset=UTF-8";
+        if (lower.endsWith(".css"))   return "text/css; charset=UTF-8";
+        if (lower.endsWith(".js") || lower.endsWith(".mjs")) return "application/javascript; charset=UTF-8";
+        if (lower.endsWith(".json"))  return "application/json; charset=UTF-8";
+        if (lower.endsWith(".png"))   return "image/png";
+        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+        if (lower.endsWith(".gif"))   return "image/gif";
+        if (lower.endsWith(".svg"))   return "image/svg+xml";
+        if (lower.endsWith(".ico"))   return "image/x-icon";
+        if (lower.endsWith(".webp"))  return "image/webp";
+        if (lower.endsWith(".woff2")) return "font/woff2";
+        if (lower.endsWith(".woff"))  return "font/woff";
+        if (lower.endsWith(".ttf"))   return "font/ttf";
+        if (lower.endsWith(".dae"))   return "model/vnd.collada+xml";
+        if (lower.endsWith(".glb"))   return "model/gltf-binary";
+        if (lower.endsWith(".gltf"))  return "model/gltf+json";
+        if (lower.endsWith(".mp4"))   return "video/mp4";
+        if (lower.endsWith(".webm"))  return "video/webm";
+        if (lower.endsWith(".wasm"))  return "application/wasm";
+        if (lower.endsWith(".xlsx"))  return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         return "application/octet-stream";
     }
 }
