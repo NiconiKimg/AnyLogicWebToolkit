@@ -1,6 +1,6 @@
 # AnyLogic Web Toolkit
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-0.1.1-blue.svg)
 ![Java](https://img.shields.io/badge/Java-17-orange.svg)
 ![AnyLogic](https://img.shields.io/badge/AnyLogic-8.9.9+-green.svg)
 ![OS](https://img.shields.io/badge/OS-Windows_x64-lightgrey.svg)
