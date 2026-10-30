@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-10-30
+### Added
+- Added `WebRuntime.isHeadlessOrDisabled()`, `WebRuntime.setDisabled(boolean)`, and `WebRuntime.isDisabled()` to detect headless environments, batch experiments, and Alpyne simulations.
+- Added `WebDialog.setEnabled(boolean)` and `WebDialog.isEnabled()` to safely suppress browser dialog windows.
+- Support for `-Dwebtoolkit.enabled=false`, `-Dwebtoolkit.disabled=true`, and `ALPYNE_SIMULATION=true` flags.
+
+### Fixed
+- Prevented Chromium/CEF engine initialization and UI window popups during parallel simulation runs (e.g. Alpyne, RL-server) and headless environments.
+- Guarded `WebApp` startup code in `WebToolkit.alp` to avoid initializing in headless or Alpyne contexts.
+
 ## [0.1.1] - 2026-10-12
 ### Added
 - Embedded `LocalHttpServer` running on ephemeral loopback (`127.0.0.1`) to serve local HTML, CSS, JS, and 3D assets.

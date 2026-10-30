@@ -160,4 +160,38 @@ class ToolkitUnitTests {
                 .forEach(p -> { try { java.nio.file.Files.deleteIfExists(p); } catch (Exception ignored) {} });
         }
     }
+
+    @Test
+    void webRuntime_headlessAndDisabledDetection() {
+        var runtime = com.anylogic.webtoolkit.core.WebRuntime.getInstance();
+        try {
+            System.setProperty("webtoolkit.enabled", "false");
+            assertTrue(com.anylogic.webtoolkit.core.WebRuntime.isHeadlessOrDisabled());
+            assertTrue(runtime.isDisabled());
+
+            assertDoesNotThrow(() -> runtime.initialize());
+            assertDoesNotThrow(() -> runtime.checkInitialized());
+        } finally {
+            System.clearProperty("webtoolkit.enabled");
+            runtime.setDisabled(false);
+        }
+    }
+
+    @Test
+    void webDialog_disabledMode_openIsNoOp() {
+        var dialog = new com.anylogic.webtoolkit.ui.WebDialog("index.html");
+        dialog.setEnabled(false);
+        assertFalse(dialog.isEnabled());
+
+        assertDoesNotThrow(dialog::open);
+        assertEquals(com.anylogic.webtoolkit.core.WebAppState.CLOSED, dialog.getState());
+        assertFalse(dialog.isOpen());
+
+        assertDoesNotThrow(dialog::show);
+        assertDoesNotThrow(dialog::hide);
+        assertDoesNotThrow(dialog::toggle);
+        assertDoesNotThrow(dialog::reload);
+        assertDoesNotThrow(() -> dialog.getBridge().emit("testEvent", java.util.Map.of("key", "val")));
+        assertDoesNotThrow(dialog::close);
+    }
 }
