@@ -642,7 +642,7 @@ if (!esEntornoHeadlessOAlpyne) {
 		</Resource>
 		<Resource>
 			<Id>1787708497913</Id>
-			<Path><![CDATA[AnyLogicWebToolkit-0.1.1.jar]]></Path>
+			<Path><![CDATA[AnyLogicWebToolkit-0.1.2.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
@@ -662,7 +662,7 @@ if (!esEntornoHeadlessOAlpyne) {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[webtoolkit]]></PackageName>
-			<ClassName><![CDATA[AnyLogicWebToolkit-0.1.1.jar]]></ClassName>
+			<ClassName><![CDATA[AnyLogicWebToolkit-0.1.2.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>true</Imported>
 		<Folder>false</Folder>
