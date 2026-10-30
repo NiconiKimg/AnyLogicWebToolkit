@@ -69,6 +69,7 @@ public class WebDialog {
     private int     height    = 800;
     private boolean modal     = false;
     private boolean resizable = true;
+    private boolean enabled   = true;
 
     private JFrame     dialog;
     private CefClient  cefClient;
@@ -117,6 +118,22 @@ public class WebDialog {
      */
     public WebDialog setResizable(boolean v) { this.resizable = v;    return this; }
 
+    /**
+     * Sets whether this dialog is enabled.
+     * When set to {@code false}, {@link #open} is a safe no-op.
+     *
+     * @param v {@code true} to enable
+     * @return {@code this} for chaining
+     */
+    public WebDialog setEnabled(boolean v)   { this.enabled = v;      return this; }
+
+    /**
+     * @return {@code true} if enabled and not suppressed by a headless/disabled environment
+     */
+    public boolean isEnabled() {
+        return enabled && !com.anylogic.webtoolkit.core.WebRuntime.getInstance().isDisabled();
+    }
+
     // --- Accessors ---
 
     /** @return the {@link WebBridge} for emitting events and registering commands */
@@ -150,6 +167,11 @@ public class WebDialog {
      * @throws WebToolkitException with code {@code DIALOG_OPEN_FAILED} if construction fails
      */
     public void open() {
+        if (!isEnabled()) {
+            state = WebAppState.CLOSED;
+            LOG.info("WebDialog.open() suppressed (headless or disabled environment): " + resourcePath);
+            return;
+        }
         WebRuntime.getInstance().checkInitialized();
         SwingUtilities.invokeLater(() -> {
             state = WebAppState.INITIALIZING;
@@ -191,6 +213,7 @@ public class WebDialog {
      * No-op if the browser is not yet open.
      */
     public void reload() {
+        if (!isEnabled()) return;
         if (browser != null) SwingUtilities.invokeLater(browser::reload);
     }
 
@@ -218,6 +241,7 @@ public class WebDialog {
     // --- Internal ---
 
     private void buildAndShow() {
+        if (!isEnabled()) return;
         final Path projectRoot = Paths.get(System.getProperty("user.dir"));
 
         cefClient = CefApp.getInstance().createClient();

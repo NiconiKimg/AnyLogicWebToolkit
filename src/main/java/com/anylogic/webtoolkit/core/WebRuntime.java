@@ -27,6 +27,7 @@ public class WebRuntime {
     private static final WebRuntime INSTANCE = new WebRuntime();
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
+    private final AtomicBoolean disabled = new AtomicBoolean(false);
     private WebConfig config;
     private CefApp cefApp;
     private Timer messageLoopTimer;
@@ -35,6 +36,66 @@ public class WebRuntime {
 
     /** Returns the singleton instance. */
     public static WebRuntime getInstance() { return INSTANCE; }
+
+    /**
+     * Detects if the current environment is headless or explicitly disabled.
+     * Prevents Chromium/CEF from initializing in headless environments, CI pipelines,
+     * batch experiments, or Alpyne parallel simulation runs.
+     *
+     * @return {@code true} if headless or web toolkit execution is disabled
+     */
+    public static boolean isHeadlessOrDisabled() {
+        if ("false".equalsIgnoreCase(System.getProperty("webtoolkit.enabled"))) {
+            return true;
+        }
+        if ("true".equalsIgnoreCase(System.getProperty("webtoolkit.disabled"))) {
+            return true;
+        }
+        if (System.getProperty("alpyne") != null) {
+            return true;
+        }
+        String envAlpyne = System.getenv("ALPYNE_SIMULATION");
+        if (envAlpyne != null && ("true".equalsIgnoreCase(envAlpyne) || "1".equals(envAlpyne))) {
+            return true;
+        }
+        if (java.awt.GraphicsEnvironment.isHeadless()) {
+            return true;
+        }
+        try {
+            for (java.util.Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+                String name = entry.getKey().getName();
+                if (name != null) {
+                    String lower = name.toLowerCase();
+                    if (lower.contains("alpyne") || lower.contains("rl-server") || lower.contains("py4j")) {
+                        return true;
+                    }
+                }
+                for (StackTraceElement elem : entry.getValue()) {
+                    String className = elem.getClassName().toLowerCase();
+                    if (className.contains("alpyne") || className.contains("reinforcementlearning")) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Throwable ignored) {}
+        return false;
+    }
+
+    /**
+     * Explicitly disables or enables this runtime.
+     *
+     * @param disabled {@code true} to disable the web runtime
+     */
+    public void setDisabled(boolean disabled) {
+        this.disabled.set(disabled);
+    }
+
+    /**
+     * @return {@code true} if explicitly disabled or running in a headless/Alpyne environment
+     */
+    public boolean isDisabled() {
+        return disabled.get() || isHeadlessOrDisabled();
+    }
 
     /**
      * Initializes the CEF runtime with the given configuration.
@@ -47,6 +108,10 @@ public class WebRuntime {
      * @throws WebToolkitException with code {@code RUNTIME_INIT_FAILED} if initialization fails
      */
     public synchronized void initialize(WebConfig config) {
+        if (isDisabled()) {
+            LOG.info("WebRuntime initialization suppressed (headless or disabled environment)");
+            return;
+        }
         if (initialized.get()) { LOG.warn("Already initialized"); return; }
         this.config = config;
         LOG.info("Starting WebRuntime...");
@@ -126,6 +191,7 @@ public class WebRuntime {
      * @throws WebToolkitException with code {@code NOT_INITIALIZED} if not initialized
      */
     public void checkInitialized() {
+        if (isDisabled()) return;
         if (!initialized.get())
             throw new WebToolkitException("NOT_INITIALIZED",
                 "Call WebRuntime.getInstance().initialize() before using the toolkit");
