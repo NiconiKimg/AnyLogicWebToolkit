@@ -158,7 +158,13 @@
 		<ActiveObjectClass>
 			<Id>1787526834866</Id>
 			<Name><![CDATA[WebApp]]></Name>
-			<StartupCode><![CDATA[com.anylogic.webtoolkit.core.WebRuntime.getInstance().initialize();
+			<StartupCode><![CDATA[boolean esEntornoHeadlessOAlpyne = java.awt.GraphicsEnvironment.isHeadless()
+    || getExperimentHost() == null
+    || (getEngine() != null && getEngine().getExperiment() != null 
+        && (getEngine().getExperiment().getClass().getSimpleName().toLowerCase().contains("alpyne")
+            || getEngine().getExperiment().getClass().getSimpleName().toLowerCase().contains("reinforcementlearning")))
+    || "false".equalsIgnoreCase(System.getProperty("webtoolkit.enabled"))
+    || "true".equalsIgnoreCase(System.getProperty("webtoolkit.disabled"));
 
 dialog = new com.anylogic.webtoolkit.ui.WebDialog(htmlPath);
 dialog.setTitle(windowTitle);
@@ -174,7 +180,12 @@ dialog.getBridge().registerCommand("__ready__", (args, cb) -> {
     cb.success(null);
 });
 
-dialog.open();
+if (!esEntornoHeadlessOAlpyne) {
+    com.anylogic.webtoolkit.core.WebRuntime.getInstance().initialize();
+    dialog.open();
+} else {
+    traceln("WebToolkit desactivado: detectado entorno headless / Alpyne.");
+}
 ]]></StartupCode>
 			<DestroyCode><![CDATA[if (dialog != null) {
     dialog.close();
